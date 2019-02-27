@@ -1,0 +1,32 @@
+
+group 'io.fchain.developers'
+version '0.0.1'
+
+
+
+
+allprojects {
+
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'eclipse'
+
+    sourceCompatibility = '1.8'
+
+    ext {
+        bladeVersion = '2.0.14.RELEASE'
+    }
+
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven { url 'https://jitpack.io' }
+        maven{ url "http://maven.aliyun.com/nexus/content/groups/public/"}
+    }
+
+    dependencies {
+        compileOnly('org.projectlombok:lombok')
+    }
+
+
+}
