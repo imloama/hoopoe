@@ -27,5 +27,6 @@ dependencies {
 	implementation('mysql:mysql-connector-java')
 	compileOnly('org.projectlombok:lombok')
 	implementation 'com.bladejava:blade-mvc:2.0.14.RELEASE'
+	implementation 'io.github.biezhi:anima:0.2.6'
 }
 
