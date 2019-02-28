@@ -21,8 +21,8 @@ repositories {
 }
 
 dependencies {
-	implementation('mysql:mysql-connector-java')
-	compileOnly('org.projectlombok:lombok')
-	compile project(":core")
+//	implementation('mysql:mysql-connector-java')
+//	compileOnly('org.projectlombok:lombok:1.18.6')
+	implementation   project(":core")
 }
 

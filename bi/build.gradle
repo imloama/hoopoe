@@ -14,17 +14,25 @@ apply plugin: 'application'
 jar {
   baseName = 'bi'
   version = '0.0.1'
+	manifest {
+		attributes 'Main-Class': 'hoopoe.bi.BIApplication'
+	}
+	from {
+		configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+	}
 }
 sourceCompatibility = 1.8
+
+mainClassName = 'hoopoe.bi.BIApplication'
 
 repositories {
 	mavenCentral()
 }
 
 dependencies {
-	implementation('mysql:mysql-connector-java')
-	compileOnly('org.projectlombok:lombok')
-	implementation 'com.bladejava:blade-mvc:2.0.14.RELEASE'
+//	implementation('mysql:mysql-connector-java')
+//	compileOnly('org.projectlombok:lombok:1.18.6')
+//	implementation 'com.bladejava:blade-mvc:2.0.14.RELEASE'
 	compile project(":users")
 	compile project(":core")
 }
