@@ -1,24 +1,24 @@
-buildscript {
-	repositories {
-		mavenCentral()
-		jcenter()
-		maven{ url "http://maven.aliyun.com/nexus/content/groups/public/"}
-	}
-}
-
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
-
-jar {
-  baseName = 'users'
-  version = '0.0.1'
-}
-sourceCompatibility = 1.8
-
-repositories {
-	mavenCentral()
-}
+//buildscript {
+//	repositories {
+//		mavenCentral()
+//		jcenter()
+//		maven{ url "http://maven.aliyun.com/nexus/content/groups/public/"}
+//	}
+//}
+//
+//apply plugin: 'java'
+//apply plugin: 'eclipse'
+//apply plugin: 'idea'
+//
+//jar {
+//  baseName = 'users'
+//  version = '0.0.1'
+//}
+//sourceCompatibility = 1.8
+//
+//repositories {
+//	mavenCentral()
+//}
 
 dependencies {
 //	implementation('mysql:mysql-connector-java')
