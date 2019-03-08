@@ -28,6 +28,13 @@
 //repositories {
 //	mavenCentral()
 //}
+//
+//plugins {
+//	id 'org.springframework.boot' version '2.1.3.RELEASE'  apply false
+//}
+//
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 
 apply plugin: 'application'
 mainClassName = 'hoopoe.bi.BIApplication'

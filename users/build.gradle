@@ -1,28 +1,8 @@
-//buildscript {
-//	repositories {
-//		mavenCentral()
-//		jcenter()
-//		maven{ url "http://maven.aliyun.com/nexus/content/groups/public/"}
-//	}
-//}
-//
-//apply plugin: 'java'
-//apply plugin: 'eclipse'
-//apply plugin: 'idea'
-//
-//jar {
-//  baseName = 'users'
-//  version = '0.0.1'
-//}
-//sourceCompatibility = 1.8
-//
-//repositories {
-//	mavenCentral()
-//}
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
 
 dependencies {
-//	implementation('mysql:mysql-connector-java')
-//	compileOnly('org.projectlombok:lombok:1.18.6')
 	implementation   project(":core")
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	testImplementation 'org.springframework.security:spring-security-test'

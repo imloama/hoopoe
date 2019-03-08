@@ -1,11 +1,13 @@
 package hoopoe.bi;
 
-import com.blade.Blade;
 
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
 public class BIApplication {
 
     public static void main(String[] args) {
-        Blade.of().get("/", ctx -> ctx.text("Hello Blade")).start();
+
     }
 
 }
