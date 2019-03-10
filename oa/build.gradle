@@ -1,8 +1,21 @@
-apply plugin: 'org.springframework.boot'
+plugins { id "io.spring.dependency-management" version "1.0.7.RELEASE"}
 apply plugin: 'io.spring.dependency-management'
 
+
 dependencies {
-	implementation   project(":core")
-	implementation project(":users")
+	compile('org.springframework.boot:spring-boot-starter')
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+//        implementation 'org.springframework.boot:spring-boot-starter-undertow'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	compile('org.springframework.boot:spring-boot-starter')
+
+	compile project(":users")
+	compile project(":core")
+
 }
 
+dependencyManagement {
+	imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
+}
