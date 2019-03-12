@@ -1,12 +1,14 @@
 //apply plugin: 'org.springframework.boot'
-plugins { id "io.spring.dependency-management" version "1.0.7.RELEASE"}
+//plugins { id "io.spring.dependency-management" version "1.0.7.RELEASE"}
 apply plugin: 'io.spring.dependency-management'
 
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter')
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+//	implementation 'com.github.imloama:mybatisplus-bootext:0.0.3'
 	implementation   project(":core")
 //	implementation 'org.springframework.boot:spring-boot-starter-security'
 //	testImplementation 'org.springframework.security:spring-security-test'
