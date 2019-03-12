@@ -1,0 +1,51 @@
+server:
+  port: 8080
+
+
+bootext:
+  cacheName: hoopoe
+
+
+spring:
+  # 是否开启 SQL日志输出，生产环境建议关闭，有性能损耗
+  p6spy: true
+  hikari:
+    connection-timeout: 30000
+    max-lifetime: 1800000
+    max-pool-size: 15
+    min-idle: 5
+    connection-test-query: select 1
+    pool-name: Hoopoe
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/hoopoe?serverTimezone=GMT%2B8
+    username: root
+    password: root
+    db-name: hoopoe
+    filters: wall,mergeStat
+    jmx-enabled: false
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    password:
+    lettuce:
+      pool:
+        #最大连接数
+        max-active: 8
+        #最大阻塞等待时间(负数表示没限制)
+        max-wait: -1
+        #最大空闲
+        max-idle: 8
+        #最小空闲
+        min-idle: 0
+      #连接超时时间
+      timeout: 10000
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: 1
+
+hoopoe:
+  anon-url:
