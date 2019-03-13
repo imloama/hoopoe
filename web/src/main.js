@@ -1,70 +1,24 @@
-/* eslint-disable no-console,no-unused-vars */
+import '@babel/polyfill'
 import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Antd from "ant-design-vue";
-import App from './App'
-import store from './store/index'
-import router from './router/index'
-import 'ant-design-vue/dist/antd.css'
-import vuescroll from 'vuescroll';
-import 'vuescroll/dist/vuescroll.css';
-import '@/assets/css/theme.less'
-import '@/assets/icon/iconfont'
-import WrapperContent from '@/components/layout/WrapperContent'
-import {message, notification} from 'ant-design-vue'
-import {notice, destroyNotice} from './assets/js/notice'
+import App from './App.vue'
+import router from './router'
+import store from './store/'
+import { VueAxios } from '@/utils/request' // axios 不建议引入到 Vue 原型链上
 
-import moment from 'moment';
-import 'moment/locale/zh-cn';
-
-import common from "./mixins/common";
-
+import './core/use'
+import bootstrap from './core/bootstrap'
+import '@/permission' // permission control
 import '@/utils/filter' // global filter
 
+Vue.config.productionTip = false
 
-moment.locale('zh-cn');
-
-Vue.use(VueRouter);
-Vue.use(store);
-
-Vue.config.productionTip = false;
-Vue.use(Antd);
-Vue.component('WrapperContent', WrapperContent);
-
-import VueClipboards from 'vue-clipboards';
-Vue.use(VueClipboards);
-
-import uploader from 'vue-simple-uploader'
-Vue.use(uploader);
-
-Vue.prototype.$message = message;
-Vue.prototype.$notification = notification;
-Vue.prototype.$notice = notice;
-Vue.prototype.$destroyNotice = destroyNotice;
-
-Vue.use(vuescroll);
-Vue.prototype.$vuescrollConfig = {
-    vuescroll: {
-        mode: 'native'
-    },
-    scrollPanel: {
-        scrollingX: true,
-    },
-    bar: {
-        delayTime: 500,
-        onlyShowBarOnScroll: false,
-        background: "#cecece",
-        keepShow: false
-    }
-};
-
-Vue.mixin(common);
-
+Vue.use(VueAxios, router)
 
 new Vue({
-    el: '#app',
-    store,
-    router,
-    template: '<App/>',
-    components: {App}
-});
+  router,
+  store,
+  created () {
+    bootstrap()
+  },
+  render: h => h(App)
+}).$mount('#app')
