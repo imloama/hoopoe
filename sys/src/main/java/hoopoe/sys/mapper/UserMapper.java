@@ -1,7 +1,7 @@
-package hoopoe.users.mapper;
+package hoopoe.sys.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import hoopoe.users.model.User;
+import hoopoe.sys.model.User;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

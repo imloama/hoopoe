@@ -1,6 +1,6 @@
 rootProject.name = 'hoopoe'
 include 'core'
-include 'users'
+include 'sys'
 include 'bi'
 include 'oa'
 include 'projects'

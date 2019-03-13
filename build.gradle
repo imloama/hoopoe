@@ -69,6 +69,7 @@ subprojects {
          compile group: 'org.quartz-scheduler', name: 'quartz', version: '2.3.0'
          
          compile group: 'com.wuwenze', name: 'ExcelKit', version: '2.0.71'
+         compile group: 'cn.hutool', name: 'hutool-all', version: '4.5.1'
 
 
 

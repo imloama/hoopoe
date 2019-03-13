@@ -1,8 +1,8 @@
-package hoopoe.users.service;
+package hoopoe.sys.service;
 
 import com.github.imloama.mybatisplus.bootext.base.BaseServiceImpl;
-import hoopoe.users.mapper.UserMapper;
-import hoopoe.users.model.User;
+import hoopoe.sys.mapper.UserMapper;
+import hoopoe.sys.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
