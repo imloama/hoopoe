@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.github.imloama.mybatisplus.bootext.base.BaseModel;
 import com.wuwenze.poi.annotation.Excel;
 import com.wuwenze.poi.annotation.ExcelField;
+import hoopoe.core.tree.ITree;
 import hoopoe.core.excel.convert.TimeConverter;
 import lombok.Data;
 
@@ -17,7 +18,7 @@ import java.util.Date;
 @Data
 @TableName("sys_dept")
 @Excel("部门信息表")
-public class Dept extends BaseModel<Dept,Long> {
+public class Dept extends BaseModel<Dept,Long> implements ITree {
 
     private static final long serialVersionUID = -7790334862410409053L;
 
@@ -42,5 +43,26 @@ public class Dept extends BaseModel<Dept,Long> {
     @Override
     public <ID> ID getPrimaryKey() {
         return null;
+    }
+
+    @Override
+    public String getKey() {
+        return String.valueOf(id);
+    }
+
+    @Override
+    public String getValue() {
+        return String.valueOf(id);
+    }
+
+    @Override
+    public String getLabel() {
+        return this.name;
+    }
+
+    @Override
+    public String getParentKey() {
+        if(this.parentId == null)return null;
+        return String.valueOf(this.parentId);
     }
 }

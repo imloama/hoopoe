@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.github.imloama.mybatisplus.bootext.base.BaseModel;
 import com.wuwenze.poi.annotation.Excel;
 import com.wuwenze.poi.annotation.ExcelField;
+import hoopoe.core.tree.ITree;
 import hoopoe.core.excel.convert.TimeConverter;
 import lombok.Data;
 
@@ -17,7 +18,7 @@ import java.util.Date;
 @Data
 @TableName("sys_menu")
 @Excel("菜单信息表")
-public class Menu extends BaseModel<Menu,Long> {
+public class Menu extends BaseModel<Menu,Long> implements ITree {
 
     private static final long serialVersionUID = 7187628714679791771L;
 
@@ -33,7 +34,7 @@ public class Menu extends BaseModel<Menu,Long> {
     @NotBlank(message = "必填项")
     @Size(max = 10, message = "长度限制")
     @ExcelField(value = "名称")
-    private String menuName;
+    private String name;
 
     @Size(max = 50, message = "长度限制")
     @ExcelField(value = "地址")
@@ -66,5 +67,26 @@ public class Menu extends BaseModel<Menu,Long> {
     @Override
     public Long getPrimaryKey() {
         return id;
+    }
+
+    @Override
+    public String getKey() {
+        return String.valueOf(id);
+    }
+
+    @Override
+    public String getValue() {
+        return String.valueOf(id);
+    }
+
+    @Override
+    public String getLabel() {
+        return name;
+    }
+
+    @Override
+    public String getParentKey() {
+        if(this.parentId == null)return null;
+        return String.valueOf(parentId);
     }
 }
