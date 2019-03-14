@@ -3,6 +3,7 @@ package hoopoe.sys.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import hoopoe.sys.model.Menu;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -10,18 +11,16 @@ import java.util.List;
 public interface MenuMapper extends BaseMapper<Menu> {
 
 
-    List<Menu> findUserPermissions(String userName);
+    @Select({
+            "select * from sys_menu where id in (select rm.menu_id from sys_role_menu rm, sys_user_role ur where rm.role_id=ur.role_id and ur.userid=#{userId})"
+    })
+    List<Menu> findByUser(Long userId);
 
-    List<Menu> findUserMenus(String userName);
 
     /**
      * 查找当前菜单/按钮关联的用户 ID
      */
-    List<String> findUserIdsByMenuId(String menuId);
-
-    /**
-     * 递归删除菜单/按钮
-     */
-    //void deleteMenus(String menuId);
+    @Select("select ur.user_id from sys_role_menu rm, sys_user_role ur where rm.role_id=ur.role_id and rm.menu_id=#{menuId}")
+    List<String> findUserIdsByMenuId(Long menuId);
 
 }

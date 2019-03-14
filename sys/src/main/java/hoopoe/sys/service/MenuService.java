@@ -7,9 +7,23 @@ import hoopoe.sys.model.Dict;
 import hoopoe.sys.model.Menu;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Slf4j
 public class MenuService extends BaseServiceImpl<MenuMapper, Menu> {
+
+
+    @Transactional(readOnly = true)
+    List<Menu> findByUser(Long userId){
+        return this.baseMapper.findByUser(userId);
+    }
+
+    @Transactional(readOnly = true)
+    List<String> findUserIdsByMenuId(Long menuId){
+        return this.baseMapper.findUserIdsByMenuId(menuId);
+    }
 
 }
