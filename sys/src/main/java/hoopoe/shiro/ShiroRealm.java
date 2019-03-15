@@ -22,6 +22,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 自定义实现 ShiroRealm，包含认证和授权两大模块
@@ -48,16 +49,16 @@ public class ShiroRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection token) {
-        String username = JWTUtil.getUsername(token.toString());
+        String userId = JWTUtil.getUserId(token.toString());
 
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
 
         // 获取用户角色集
-        Set<String> roleSet = userService.getUserRoles(username);
+        Set<String> roleSet = userService.getUserRoles(userId).stream().map(String::valueOf).collect(Collectors.toSet());
         simpleAuthorizationInfo.setRoles(roleSet);
 
         // 获取用户权限集
-        Set<String> permissionSet = userService.getUserPermissions(username);
+        Set<String> permissionSet = userService.getUserPermissions(userId).stream().map(String::valueOf).collect(Collectors.toSet());
         simpleAuthorizationInfo.setStringPermissions(permissionSet);
         return simpleAuthorizationInfo;
     }
@@ -88,17 +89,17 @@ public class ShiroRealm extends AuthorizingRealm {
         if (StringUtils.isBlank(encryptTokenInRedis))
             throw new AuthenticationException("token已经过期");
 
-        String username = JWTUtil.getUsername(token);
+        String userId = JWTUtil.getUserId(token);
 
-        if (StringUtils.isBlank(username))
+        if (StringUtils.isBlank(userId))
             throw new AuthenticationException("token校验不通过");
 
         // 通过用户名查询用户信息
-        User user = userService.getUser(username);
+        User user = userService.getUser(userId);
 
         if (user == null)
             throw new AuthenticationException("用户名或密码错误");
-        if (!JWTUtil.verify(token, username, user.getPwd()))
+        if (!JWTUtil.verify(token, userId, user.getPwd()))
             throw new AuthenticationException("token校验不通过");
         return new SimpleAuthenticationInfo(token, token, "hoopoe_shiro_realm");
     }
