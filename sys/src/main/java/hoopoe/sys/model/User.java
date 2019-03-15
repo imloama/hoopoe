@@ -7,18 +7,24 @@ import com.wuwenze.poi.annotation.Excel;
 import com.wuwenze.poi.annotation.ExcelField;
 import hoopoe.core.excel.convert.TimeConverter;
 import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @TableName("sys_users")
 @Excel("用户信息表")
-public class User extends BaseModel<User,Long> {
+public class User extends BaseModel<User,Long> implements UserDetails {
     /**
      * 账户状态
      */
@@ -73,7 +79,7 @@ public class User extends BaseModel<User,Long> {
     @ExcelField(value = "部门")
     private transient String deptName;
 
-    private transient List<String> roles;
+    private transient List<Role> roles;
 
 
     public Long getAuthCacheKey() {
@@ -81,8 +87,47 @@ public class User extends BaseModel<User,Long> {
     }
 
 
+
     @Override
     public Object getPrimaryKey() {
         return id;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if(this.roles!=null){
+            return this.roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toSet());
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public String getPassword() {
+        return this.pwd;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.name;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return this.STATUS_VALID == this.status;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return this.STATUS_VALID == this.status;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return this.STATUS_VALID == this.status;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.STATUS_VALID == this.status;
     }
 }
