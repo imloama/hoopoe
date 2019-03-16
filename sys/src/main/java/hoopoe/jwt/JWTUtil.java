@@ -34,16 +34,11 @@ public class JWTUtil {
         return username;
     }
 
-    public static Date getCreatedDateFromToken(String token) {
-        Date created;
-        try {
-            final Claims claims = getClaimsFromToken(token);
-            created = new Date((Long) claims.get(CLAIM_KEY_CREATED));
-        } catch (Exception e) {
-            created = null;
-        }
-        return created;
+    public static JWTToken getFromToken(String token){
+        return getJWTTokenFromToken(token);
     }
+
+
 
     public static Date getExpirationDateFromToken(String token) {
         Date expiration;
@@ -69,6 +64,12 @@ public class JWTUtil {
         return claims;
     }
 
+    private static JWTToken getJWTTokenFromToken(String token){
+        Claims claims = getClaimsFromToken(token);
+        if(claims == null)return null;
+        return JWTToken.fromClaim(claims);
+    }
+
     private static Date generateExpirationDate() {
         return new Date(System.currentTimeMillis() + EXPIRE_TIME * 1000);
     }
@@ -82,16 +83,18 @@ public class JWTUtil {
         return (lastPasswordReset != null && created.before(lastPasswordReset));
     }
 
-    public static String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
-        claims.put(CLAIM_KEY_CREATED, new Date());
-        return generateToken(claims);
+    public static String generateToken(User user) {
+//        Map<String, Object> claims = new HashMap<>();
+//        claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
+//        claims.put(CLAIM_KEY_CREATED, new Date());
+        JWTToken token = JWTToken.fromUser(user);
+        return generateToken(token);
     }
 
-    static String generateToken(Map<String, Object> claims) {
+    static String generateToken(JWTToken token) {
         return Jwts.builder()
-                .setClaims(claims)
+                .setClaims(token.toMap())
+                .setSubject(token.getUsername())
                 .setExpiration(generateExpirationDate())
                 .signWith(SignatureAlgorithm.HS512, HoopoeConsts.SECRET )
                 .compact();
@@ -105,8 +108,10 @@ public class JWTUtil {
         String refreshedToken;
         try {
             final Claims claims = getClaimsFromToken(token);
-            claims.put(CLAIM_KEY_CREATED, new Date());
-            refreshedToken = generateToken(claims);
+//            claims.put(CLAIM_KEY_CREATED, new Date());
+            final JWTToken t = JWTToken.fromClaim(claims);
+            t.setCreated(new Date().getTime());
+            refreshedToken = generateToken(t);
         } catch (Exception e) {
             refreshedToken = null;
         }

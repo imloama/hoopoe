@@ -34,6 +34,10 @@ public class JWTTokenProvider {
         return JWTUtil.getUsernameFromToken(token);
     }
 
+    public JWTToken getJWTToken(String token){
+        return JWTUtil.getFromToken(token);
+    }
+
 
 
 
