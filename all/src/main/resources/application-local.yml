@@ -47,5 +47,19 @@ spring:
     redis:
       time-to-live: 1
 
+
 hoopoe:
   anon-url:
+
+
+logging:
+  level:
+    root: debug
+    org:
+      spring: debug
+    com:
+      alibaba: debug
+    cn:
+      hutool: debug
+    hoopoe: debug
+  path: ./logs

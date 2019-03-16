@@ -10,4 +10,6 @@ public class HoopoeConsts {
 
     public static final String TOKEN_HEADER_KEY = "HTOKEN"; // 存放Token的Header Key
 
+    public static final String JSON_CONTENT_TYPE = "application/json;charset=utf-8";
+
 }

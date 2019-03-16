@@ -1,44 +1,51 @@
 package hoopoe.jwt;
 
 import hoopoe.core.HoopoeConsts;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Slf4j
 @Component
-public class JWTFilter extends OncePerRequestFilter {
+public class JWTFilter extends GenericFilterBean {
 
     @Autowired
     private UserDetailsService userDetailsService;
+    @Autowired
+    private JWTTokenProvider jwtTokenProvider;
+
 
     @Override
-    protected void doFilterInternal (HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-
-        String token = request.getHeader( HoopoeConsts.TOKEN_HEADER_KEY );
-        if (token != null) {
-            String username = JWTUtil.getUsernameFromToken(token);
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-                if (JWTUtil.validateToken(token, userDetails)) {
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(
-                            request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        try{
+            String token = JWTUtil.getToken((HttpServletRequest) request);
+            if (StringUtils.isNotBlank(token)) {
+                Authentication auth = jwtTokenProvider.getAuthentication(token);
+                if (auth != null) {
+                    SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             }
+        }catch (Exception e){
+//            throw new IOException(e.getMessage(),e);
+            log.error(e.getMessage(),e);
         }
+
         chain.doFilter(request, response);
     }
 }

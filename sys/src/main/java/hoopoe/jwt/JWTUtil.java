@@ -11,6 +11,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -119,6 +120,10 @@ public class JWTUtil {
                 username.equals(user.getUsername())
                         && !isTokenExpired(token)
         );
+    }
+
+    public static String getToken(HttpServletRequest request){
+        return request.getHeader(HoopoeConsts.TOKEN_HEADER_KEY);
     }
 
 //

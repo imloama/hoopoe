@@ -64,6 +64,7 @@ public class UserService extends BaseServiceImpl<UserMapper, User> implements Us
         return this.getByName(username);
     }
 
+    @Transactional(readOnly = true)
     public String login( String username, String password ) {
         UsernamePasswordAuthenticationToken upToken = new UsernamePasswordAuthenticationToken( username, password );
         final Authentication authentication = authenticationManager.authenticate(upToken);
@@ -75,6 +76,7 @@ public class UserService extends BaseServiceImpl<UserMapper, User> implements Us
     }
 
     // 注册
+    @Transactional
     public User register( User userToAdd ) {
         final String username = userToAdd.getUsername();
         if( this.getByName(username)!=null ) {
