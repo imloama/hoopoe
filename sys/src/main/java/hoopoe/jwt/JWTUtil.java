@@ -9,6 +9,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.servlet.http.HttpServletRequest;
@@ -70,7 +71,7 @@ public class JWTUtil {
         return JWTToken.fromClaim(claims);
     }
 
-    private static Date generateExpirationDate() {
+    public  static Date generateExpirationDate() {
         return new Date(System.currentTimeMillis() + EXPIRE_TIME * 1000);
     }
 

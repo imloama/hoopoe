@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RestController
@@ -37,7 +38,8 @@ public class UserController {
         String token = this.userService.login(param.getUsername(), param.getPassword());
         if(StringUtils.isBlank(token))return APIResult.fail("用户名或密码不正确！");
         //token保存到redis
-        this.redisTemplate.opsForValue().set(HoopoeConsts.TOKEN_PREFIX+param.getUsername()+"_"+token.substring(0,8), token);
+        this.redisTemplate.opsForValue().set(HoopoeConsts.TOKEN_PREFIX+param.getUsername()+"_"+token.substring(0,8), token,
+                JWTUtil.generateExpirationDate().getTime(), TimeUnit.MILLISECONDS);
         return APIResult.ok("success",token);
     }
 
@@ -45,7 +47,7 @@ public class UserController {
     public APIResult logout(@Token String token){
         JWTToken jwtToken = JWTUtil.getFromToken(token);
         String key = HoopoeConsts.TOKEN_PREFIX+ jwtToken.getUsername()+"_"+token.substring(0,8);
-        this.redisTemplate.opsForValue().set(key, token, 0);
+        this.redisTemplate.delete(key);
         return APIResult.ok("success");
     }
 
