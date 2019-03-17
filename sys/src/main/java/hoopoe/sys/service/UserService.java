@@ -1,5 +1,6 @@
 package hoopoe.sys.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.imloama.mybatisplus.bootext.base.BaseServiceImpl;
 import hoopoe.jwt.JWTUtil;
 import hoopoe.sys.mapper.UserMapper;
@@ -20,6 +21,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -71,7 +74,7 @@ public class UserService extends BaseServiceImpl<UserMapper, User> implements Us
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         final UserDetails userDetails = loadUserByUsername( username );
-        final String token = JWTUtil.generateToken(userDetails);
+        final String token = JWTUtil.generateToken((User) userDetails);
         return token;
     }
 
@@ -82,10 +85,20 @@ public class UserService extends BaseServiceImpl<UserMapper, User> implements Us
         if( this.getByName(username)!=null ) {
             return null;
         }
+        userToAdd.setCreateTime(new Date());
+        userToAdd.setStatus(User.STATUS_VALID);
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         final String rawPassword = userToAdd.getPassword();
         userToAdd.setPwd( encoder.encode(rawPassword) );
         this.save(userToAdd);
         return userToAdd;
     }
+
+
+    public boolean deleteUsers(List<Long> ids){
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("id", ids);
+        return this.remove(queryWrapper);
+    }
+
 }

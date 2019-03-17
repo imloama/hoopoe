@@ -87,7 +87,6 @@ public class User extends BaseModel<User,Long> implements UserDetails {
     }
 
 
-
     @Override
     public Object getPrimaryKey() {
         return id;
