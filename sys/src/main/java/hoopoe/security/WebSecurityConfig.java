@@ -63,7 +63,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.gif",
                         "/swagger-resources/**",
                         "/v2/**",
-                        "/**/*.ttf"
+                        "/**/*.ttf",
+                        "/druid/**"
                 );
         web.ignoring().antMatchers("/v2/api-docs",
                 "/swagger-resources/configuration/ui",
