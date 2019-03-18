@@ -11,6 +11,8 @@ import hoopoe.jwt.JWTUtil;
 import hoopoe.sys.model.User;
 import hoopoe.sys.service.UserService;
 import hoopoe.sys.vm.LoginRequest;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+@Api("用户管理")
 @Slf4j
 @RestController
 @RequestMapping("/api/v1")
@@ -39,6 +42,7 @@ public class UserController {
     private UserService userService;
 
 
+    @ApiOperation("登录接口")
     @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = HoopoeConsts.JSON_CONTENT_TYPE, produces = HoopoeConsts.JSON_CONTENT_TYPE)
     public APIResult login(@RequestBody @Valid LoginRequest param, HttpServletRequest request){
 //        log.debug(JSON.toJSONString(request.getParameterMap().keySet()));
@@ -50,6 +54,7 @@ public class UserController {
         return APIResult.ok("success",token);
     }
 
+    @ApiOperation("退出登陆接口")
     @GetMapping("/logout")
     public APIResult logout(@Token String token){
         JWTToken jwtToken = JWTUtil.getFromToken(token);
@@ -59,6 +64,7 @@ public class UserController {
     }
 
     //修改密码，提供原密码和新密码，再重复密码
+    @ApiOperation("修改密码")
     @PostMapping("/resetpwd")
     public APIResult resetPassword(@Token String token, @RequestBody JSONObject params){
         if(params.isEmpty())return APIResult.fail("缺少参数！");
@@ -87,6 +93,7 @@ public class UserController {
 
 
     // 重置密码，由管理员操作
+    @ApiOperation("重置密码接口，只有管理员可以操作")
     @Secured(value = "admin")
     @GetMapping("/admin/resetpwd")
     public APIResult resetPwdByAdmin(@Token String token, @RequestBody JSONObject params){
@@ -111,6 +118,17 @@ public class UserController {
     }
 
     //修改用户
+    @PostMapping("/usrs/update/{id}")
+    public APIResult updateUser(@Token String token,@PathVariable("id") Long id, @RequestBody User user){
+        User origin = this.userService.getById(id);
+        if(origin.getId()!=user.getId() ){
+            return APIResult.fail("请求参数不正确！");
+        }
+        user.setPwd(origin.getPwd());
+        user.setStatus(origin.getStatus());
+        this.userService.updateById(user);
+        return APIResult.ok("success");
+    }
 
 
 
