@@ -1,11 +1,12 @@
 package hoopoe.core.base;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.imloama.mybatisplus.bootext.base.APIResult;
-import com.github.imloama.mybatisplus.bootext.base.BaseModel;
 import com.github.imloama.mybatisplus.bootext.base.BaseService;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
+@Slf4j
 @Data
 public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseService<M>> {
 
@@ -32,6 +35,8 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
 
     @Autowired
     protected StringRedisTemplate redisTemplate;
+
+    protected abstract Class<M> getModelClass();
 
     @GetMapping("/{id}")
     public APIResult getById(@PathVariable("id") Long id){
@@ -69,8 +74,25 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
         return APIResult.ok("success");
     }
 
+    // 批量删除
+    @PostMapping("/delall")
+    public APIResult deleteAll(@RequestBody List<Long> ids)throws Exception{
+        if(ids == null || ids.isEmpty())return APIResult.fail("参数不正确！");
+        QueryWrapper<M> queryWrapper = new QueryWrapper<>();
+        M m = this.getModelClass().newInstance();
+        queryWrapper.in(m.getPrimaryKey(), ids);
+        this.service.remove(queryWrapper);
+        return APIResult.ok("success");
+    }
+
+    /**
+     * 分页查询
+     * @param pageRequest
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/page")
-    public APIResult page(@RequestBody PageRequest pageRequest){
+    public APIResult page(@RequestBody PageRequest pageRequest)throws Exception{
         Page<M> page = new Page<>();
         page.setCurrent(pageRequest.getPageNum());
         page.setSize(pageRequest.getPageSize());
@@ -80,11 +102,28 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
             page.setDesc(pageRequest.getOrderby());
         }
         QueryWrapper<M> queryWrapper = new QueryWrapper<>();
+        // 模糊查询条件
         if(StringUtils.isNotBlank(pageRequest.getSearch())){
-            //TODO
+            M m = this.getModelClass().newInstance();
+            List<String> cols = m.searchColumns();
+            if(cols!=null&&!cols.isEmpty()){
+                for(int i=0,n=cols.size();i<n;i++){
+                    if(i>0){
+                        queryWrapper.or();
+                    }
+                    queryWrapper.like(cols.get(i), pageRequest.getSearch());
+                }
+            }
         }
-        this.service.page(page, queryWrapper);
-        return APIResult.ok("success");
+        //精确查询条件
+        List<Query> queries = pageRequest.getQuery();
+        if(queries!=null&&!queries.isEmpty()){
+            for(int i=0,n=queries.size();i<n;i++){
+                queryWrapper = queries.get(i).fill(queryWrapper);
+            }
+        }
+        IPage<M> pageResult = this.service.page(page, queryWrapper);
+        return APIResult.ok("success", pageResult);
     }
 
 
