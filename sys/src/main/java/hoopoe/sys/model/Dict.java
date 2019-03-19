@@ -4,9 +4,9 @@ package hoopoe.sys.model;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.github.imloama.mybatisplus.bootext.base.BaseModel;
 import com.wuwenze.poi.annotation.Excel;
 import com.wuwenze.poi.annotation.ExcelField;
+import hoopoe.core.base.BaseModel;
 import lombok.Data;
 import lombok.ToString;
 

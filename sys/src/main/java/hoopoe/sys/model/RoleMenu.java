@@ -2,7 +2,7 @@ package hoopoe.sys.model;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.github.imloama.mybatisplus.bootext.base.BaseModel;
+import hoopoe.core.base.BaseModel;
 import lombok.Data;
 
 
