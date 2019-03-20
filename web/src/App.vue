@@ -34,6 +34,7 @@ export default {
           $store.dispatch('setSidebar', true)
           break
       }
+      console.log('deviceType', deviceType)
     })
   }
 }

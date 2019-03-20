@@ -117,7 +117,6 @@ export default {
         this.permissions.forEach(permission => {
           const selected = permissionsAction[permission.id]
           permission.selected = selected || []
-          this.onChangeCheck(permission)
         })
 
         console.log('this.permissions', this.permissions)

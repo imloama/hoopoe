@@ -77,7 +77,7 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 
   .detail-list {
 
@@ -88,7 +88,7 @@ export default {
       margin-bottom: 16px;
     }
 
-    /deep/ .term {
+    .term {
       color: rgba(0,0,0,.85);
       display: table-cell;
       line-height: 20px;
@@ -96,7 +96,7 @@ export default {
       padding-bottom: 16px;
       white-space: nowrap;
 
-      &:not(:empty):after {
+      &:after {
         content: ":";
         margin: 0 8px 0 2px;
         position: relative;
@@ -104,18 +104,12 @@ export default {
       }
     }
 
-    /deep/ .content {
+    .content {
       color: rgba(0,0,0,.65);
       display: table-cell;
-      min-height: 22px;
       line-height: 22px;
       padding-bottom: 16px;
       width: 100%;
-      &:empty {
-        content: ' ';
-        height: 38px;
-        padding-bottom: 16px;
-      }
     }
 
     &.small {
@@ -126,13 +120,13 @@ export default {
         font-weight: normal;
         margin-bottom: 12px;
       }
-      /deep/ .term, .content {
+      .term, .content {
         padding-bottom: 8px;
       }
     }
 
     &.large {
-      /deep/ .term, .content {
+      .term, .content {
         padding-bottom: 16px;
       }
 
@@ -145,7 +139,7 @@ export default {
       .term {
         padding-bottom: 8px;
       }
-      /deep/ .term, .content {
+      .term, .content {
         display: block;
       }
     }
