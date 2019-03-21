@@ -2,6 +2,7 @@ package hoopoe.sys.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.imloama.mybatisplus.bootext.base.BaseServiceImpl;
+import hoopoe.core.HoopoeConsts;
 import hoopoe.jwt.JWTUtil;
 import hoopoe.sys.mapper.UserMapper;
 import hoopoe.sys.model.Menu;
@@ -10,6 +11,7 @@ import hoopoe.sys.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -42,7 +44,11 @@ public class UserService extends BaseServiceImpl<UserMapper, User> implements Us
 
     @Transactional(readOnly = true)
     public User getByName(String name){
-        return this.baseMapper.selectByName(name);
+        User user = this.baseMapper.selectByName(name);
+        if(user!=null){
+            this.getCache().put(user.getId(), user);
+        }
+        return user;
     }
 
 
@@ -62,20 +68,23 @@ public class UserService extends BaseServiceImpl<UserMapper, User> implements Us
         return this.getById(Long.parseLong(userId));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return this.getByName(username);
     }
 
     @Transactional(readOnly = true)
-    public String login( String username, String password ) {
+    public User login( String username, String password ) {
         UsernamePasswordAuthenticationToken upToken = new UsernamePasswordAuthenticationToken( username, password );
         final Authentication authentication = authenticationManager.authenticate(upToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        final UserDetails userDetails = loadUserByUsername( username );
-        final String token = JWTUtil.generateToken((User) userDetails);
-        return token;
+        User user = getByName(username);
+        final String token = JWTUtil.generateToken(user);
+        user.setToken(token);
+        user.setPwd(null);
+        user.setIdCard(null);
+        return user;
     }
 
     // 注册

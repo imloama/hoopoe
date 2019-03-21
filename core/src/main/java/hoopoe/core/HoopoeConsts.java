@@ -12,4 +12,6 @@ public class HoopoeConsts {
 
     public static final String JSON_CONTENT_TYPE = "application/json;charset=utf-8";
 
+    public static final String CACHE_NAME = "hoopoe:cache";
+
 }

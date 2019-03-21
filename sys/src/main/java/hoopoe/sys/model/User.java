@@ -81,6 +81,8 @@ public class User extends BaseModel<User,Long> implements UserDetails {
 
     private transient List<Role> roles;
 
+    private transient String token;
+
 
     public Long getAuthCacheKey() {
         return id;
