@@ -2,6 +2,7 @@ package hoopoe.jwt;
 
 
 import com.google.common.collect.Maps;
+import hoopoe.core.HoopoeConsts;
 import hoopoe.sys.model.User;
 import lombok.Data;
 
@@ -45,6 +46,10 @@ public class JWTToken implements Serializable {
         token.setUsername(user.getUsername());
         token.setCreated(new Date().getTime());
         return token;
+    }
+
+    public String toRedisKey(String token){
+        return HoopoeConsts.TOKEN_PREFIX+ getUsername()+"."+token.substring(0,8);
     }
 
 

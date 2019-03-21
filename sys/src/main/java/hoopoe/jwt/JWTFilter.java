@@ -1,9 +1,11 @@
 package hoopoe.jwt;
 
 import hoopoe.core.HoopoeConsts;
+import hoopoe.core.configuration.HoopoeConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,15 +31,33 @@ public class JWTFilter extends GenericFilterBean {
     private UserDetailsService userDetailsService;
     @Autowired
     private JWTTokenProvider jwtTokenProvider;
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+    @Autowired
+    private HoopoeConfig config;
 
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        String path = ((HttpServletRequest)request).getRequestURI();
+        if(!path.startsWith("/api/")||config.getAnonUrls().contains(path)){
+            chain.doFilter(request, response);
+            return;
+        }
         try{
             String token = JWTUtil.getToken((HttpServletRequest) request);
             if (StringUtils.isNotBlank(token)) {
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
                 if (auth != null) {
+                    UserDetails userDetails = (UserDetails) auth.getPrincipal();
+                    boolean valid = JWTUtil.validateToken(token, userDetails);
+                    if(valid){
+                        String key = JWTUtil.getFromToken(token).toRedisKey(token);
+                        String tokenCopy = this.redisTemplate.opsForValue().get(key);
+                        if(StringUtils.isBlank(tokenCopy) || !token.equals(tokenCopy)){
+                            throw new RuntimeException("未授权或授权已过期");
+                        }
+                    }
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             }

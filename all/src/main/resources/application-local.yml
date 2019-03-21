@@ -55,7 +55,7 @@ spring:
 
 
 hoopoe:
-  anon-url:
+  anon-url: /api/v1/login
 
 
 logging:

@@ -5,6 +5,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import java.util.List;
+
 @Data
 @Configuration
 @EnableTransactionManagement(proxyTargetClass = true)
@@ -14,7 +16,7 @@ public class HoopoeConfig {
     /**
      * 不校验权限的地址
      */
-    private String anonUrl;
+    private List<String> anonUrls;
     /**
      * token默认有效时间 1天
      */
