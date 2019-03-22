@@ -4,12 +4,12 @@
       <div class="top">
         <div class="header">
           <a href="/">
-            <img src="~@/assets/logo.svg" class="logo" alt="logo">
-            <span class="title">Ant Design</span>
+            <img src="~@/assets/logo.png" class="logo" alt="logo">
+            <span class="title">Hoopoe管理系统</span>
           </a>
         </div>
         <div class="desc">
-          Ant Design 是西湖区最具影响力的 Web 设计规范
+          一站式企业后台开发平台，给程序员更多的开放、便利，可视化
         </div>
       </div>
 
@@ -17,12 +17,11 @@
 
       <div class="footer">
         <div class="links">
-          <a href="_self">帮助</a>
-          <a href="_self">隐私</a>
-          <a href="_self">条款</a>
+          <a href="https://github.com/imloama/hoopoe">源码</a>
+          <a href="https://github.com/imloama">开发者</a>
         </div>
         <div class="copyright">
-          Copyright &copy; 2018 白鹭学园技术组出品
+          Copyright &copy; 2019 github.com/imloama
         </div>
       </div>
     </div>

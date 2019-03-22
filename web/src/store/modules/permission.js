@@ -37,7 +37,8 @@ function hasRole(roles, route) {
   }
 }
 
-function filterAsyncRouter (routerMap, roles) {
+function filterAsyncRouter (routerMap, roles, menus) {
+  // TODO 要根据后台调整
   const accessedRouters = routerMap.filter(route => {
     if (hasPermission(roles.permissionList, route)) {
       if (route.children && route.children.length) {
@@ -64,8 +65,8 @@ const permission = {
   actions: {
     GenerateRoutes ({ commit }, data) {
       return new Promise(resolve => {
-        const { roles } = data
-        const accessedRouters = filterAsyncRouter(asyncRouterMap, roles)
+        const { roles, menus } = data
+        const accessedRouters = filterAsyncRouter(asyncRouterMap, roles, menus)
         commit('SET_ROUTERS', accessedRouters)
         resolve()
       })

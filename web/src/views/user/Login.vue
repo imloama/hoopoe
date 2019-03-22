@@ -46,11 +46,6 @@
 
       <a-form-item>
         <a-checkbox v-decorator="['rememberMe']">自动登陆</a-checkbox>
-        <router-link
-          :to="{ name: 'recover', params: { user: 'aaa'} }"
-          class="forge-password"
-          style="float: right;"
-        >忘记密码</router-link>
       </a-form-item>
 
       <a-form-item style="margin-top:24px">
@@ -157,6 +152,7 @@ export default {
       }, 1000)
     },
     requestFailed (err) {
+      console.error(err)
       this.$notification['error']({
         message: '错误',
         description: ((err.response || {}).data || {}).message || '请求出现错误，请稍后再试',
