@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
-@TableName("sys_users")
+@TableName("sys_user")
 @Excel("用户信息表")
 public class User extends BaseModel<User,Long> implements UserDetails {
     /**
@@ -80,6 +80,7 @@ public class User extends BaseModel<User,Long> implements UserDetails {
     private transient String deptName;
 
     private transient List<Role> roles;
+    private transient List<Menu> menus;
 
     private transient String token;
 

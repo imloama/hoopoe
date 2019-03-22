@@ -1,5 +1,6 @@
 package hoopoe.jwt;
 
+import com.alibaba.fastjson.JSON;
 import hoopoe.core.HoopoeConsts;
 import hoopoe.core.configuration.HoopoeConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -39,12 +40,15 @@ public class JWTFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String path = ((HttpServletRequest)request).getRequestURI();
-        if(!path.startsWith("/api/")||config.getAnonUrls().contains(path)){
-            chain.doFilter(request, response);
-            return;
-        }
+//        String path = ((HttpServletRequest)request).getRequestURI();
+//        if(!path.startsWith("/api/")||config.getAnonUrls().contains(path)){
+//            chain.doFilter(request, response);
+//            return;
+//        }
         try{
+            Object headers = ((HttpServletRequest) request).getHeaderNames();
+            String path = ((HttpServletRequest) request).getRequestURI();
+            System.out.println(path+"//" + JSON.toJSONString(headers));
             String token = JWTUtil.getToken((HttpServletRequest) request);
             if (StringUtils.isNotBlank(token)) {
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
@@ -53,7 +57,10 @@ public class JWTFilter extends GenericFilterBean {
                     boolean valid = JWTUtil.validateToken(token, userDetails);
                     if(valid){
                         String key = JWTUtil.getFromToken(token).toRedisKey(token);
+                        System.out.println("------------key=="+key);
                         String tokenCopy = this.redisTemplate.opsForValue().get(key);
+                        System.out.println("------------token=="+token);
+                        System.out.println("------------tokenCopy=="+tokenCopy);
                         if(StringUtils.isBlank(tokenCopy) || !token.equals(tokenCopy)){
                             throw new RuntimeException("未授权或授权已过期");
                         }

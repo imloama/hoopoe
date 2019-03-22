@@ -6,6 +6,7 @@ import hoopoe.sys.mapper.MenuMapper;
 import hoopoe.sys.model.Dict;
 import hoopoe.sys.model.Menu;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,12 +18,12 @@ public class MenuService extends BaseServiceImpl<MenuMapper, Menu> {
 
 
     @Transactional(readOnly = true)
-    List<Menu> findByUser(Long userId){
+    public List<Menu> findByUser(Long userId){
         return this.baseMapper.findByUser(userId);
     }
 
     @Transactional(readOnly = true)
-    List<String> findUserIdsByMenuId(Long menuId){
+    public List<String> findUserIdsByMenuId(Long menuId){
         return this.baseMapper.findUserIdsByMenuId(menuId);
     }
 

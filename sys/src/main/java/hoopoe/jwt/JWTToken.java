@@ -33,10 +33,10 @@ public class JWTToken implements Serializable {
 
     public static JWTToken fromClaim(Map<String,Object> claims){
         JWTToken token = new JWTToken();
-        token.setId((Long) claims.get("id"));
+        token.setId(Long.parseLong(claims.get("id").toString()));
         token.setUsername((String) claims.get("username"));
 //        token.setExpired((Long) claims.get("expired"));
-        token.setCreated((Long) claims.get("created"));
+        token.setCreated(Long.parseLong(claims.get("created").toString()));
         return token;
     }
 
