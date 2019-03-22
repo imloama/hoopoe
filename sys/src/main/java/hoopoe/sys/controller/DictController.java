@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api("字典管理")
 @RestController
 @Slf4j
-@RequestMapping("/api/v1/depts")
+@RequestMapping("/api/v1/dicts")
 public class DictController extends BaseController<Dict, DictService> {
     @Override
     protected Class<Dict> getModelClass() {
