@@ -1,8 +1,10 @@
 <template>
   <div class="user-wrapper">
-    <span class="action">
-      <a-icon type="question-circle-o"></a-icon>
-    </span>
+    <a target="_blank" href="https://github.com/imloama/hoopoe">
+      <span class="action">
+        <a-icon type="github"></a-icon>
+      </span>
+    </a>
     <header-notice class="action"/>
     <a-dropdown>
       <span class="action ant-dropdown-link user-dropdown-menu">
@@ -21,10 +23,6 @@
             <a-icon type="setting"/>
             <span>账户设置</span>
           </router-link>
-        </a-menu-item>
-        <a-menu-item key="2" disabled>
-          <a-icon type="setting"/>
-          <span>测试</span>
         </a-menu-item>
         <a-menu-divider/>
         <a-menu-item key="3">

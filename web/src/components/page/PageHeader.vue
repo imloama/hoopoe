@@ -82,13 +82,13 @@ export default {
   methods: {
     getBreadcrumb () {
       this.breadList = []
-      // this.breadList.push({name: 'index', path: '/dashboard/', meta: {title: '首页'}})
-
-      this.name = this.$route.name
-      this.$route.matched.forEach((item) => {
-        // item.name !== 'index' && this.breadList.push(item)
-        this.breadList.push(item)
-      })
+      // 取消第1级的展示
+      const routers = this.$route.matched
+      if(routers.length>=3){
+        for(let i=1,n=routers.length;i<n;i++){
+          this.breadList.push(routers[i])
+        }
+      }
     }
   },
   watch: {
