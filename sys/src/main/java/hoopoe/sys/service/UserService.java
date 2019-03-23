@@ -60,7 +60,7 @@ public class UserService extends BaseServiceImpl<UserMapper, User> implements Us
     @Transactional(readOnly = true)
     public Set<String> getUserPermissions(String userId) {
         assert StringUtils.isNotBlank(userId);
-        return this.menuService.findByUser(Long.parseLong(userId)).stream().map(Menu::getPerms).collect(Collectors.toSet());
+        return this.menuService.findByUser(Long.parseLong(userId)).stream().map(Menu::getCode).collect(Collectors.toSet());
     }
     @Transactional(readOnly = true)
     public User getUser(String userId) {

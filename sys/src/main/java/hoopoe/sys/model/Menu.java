@@ -46,7 +46,7 @@ public class Menu extends BaseModel<Menu,Long> implements ITree {
 
     @Size(max = 50, message = "长度限制")
     @ExcelField(value = "权限")
-    private String perms;
+    private String code;
 
     @ExcelField(value = "图标")
     private String icon;

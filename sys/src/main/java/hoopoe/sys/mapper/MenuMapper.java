@@ -12,7 +12,7 @@ public interface MenuMapper extends BaseMapper<Menu> {
 
 
     @Select({
-            "select * from sys_menu where id in (select rm.menu_id from sys_role_menu rm, sys_user_role ur where rm.role_id=ur.role_id and ur.userid=#{userId})"
+            "select * from sys_menu where id in (select rm.menu_id from sys_role_menu rm, sys_user_role ur where rm.role_id=ur.role_id and ur.user_id=#{userId})"
     })
     List<Menu> findByUser(Long userId);
 
