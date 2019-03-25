@@ -5,11 +5,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.imloama.mybatisplus.bootext.base.APIResult;
 import com.github.imloama.mybatisplus.bootext.base.BaseService;
+import com.wuwenze.poi.ExcelKit;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,24 +41,24 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
     protected abstract Class<M> getModelClass();
 
     @GetMapping("/{id}")
-    public APIResult getById(@PathVariable("id") Long id){
+    public APIResult getById(@PathVariable("id") Long id)throws Exception{
         M model = this.service.getById(id);
         return APIResult.ok("success", model);
     }
 
     @PostMapping("/create")
-    public APIResult update(@RequestBody  M model){
+    public APIResult update(@RequestBody  M model)throws Exception{
         model = this.beforeCreate(model);
         this.service.save(model);
         return APIResult.ok("success");
     }
 
-    protected M beforeCreate(M model){
+    protected M beforeCreate(M model) throws Exception{
         return model;
     }
 
     @PostMapping("/update/{id}")
-    public APIResult update(@PathVariable("id") Long id, @RequestBody  M model){
+    public APIResult update(@PathVariable("id") Long id, @RequestBody  M model)throws Exception{
         if(id!=model.getPrimaryKey())return APIResult.fail("参数错误！");
         M old = this.service.getById(id);
         model = this.beforeUpdate(old, model);
@@ -64,12 +66,12 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
         return APIResult.ok("success");
     }
 
-    protected M beforeUpdate(M oldModel,M newModel){
+    protected M beforeUpdate(M oldModel,M newModel)throws Exception{
         return newModel;
     }
 
     @PostMapping("/del/{id}")
-    public APIResult delete(@PathVariable("id") Long id){
+    public APIResult delete(@PathVariable("id") Long id)throws Exception{
         this.service.removeById(id);
         return APIResult.ok("success");
     }
@@ -101,6 +103,12 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
         }else{
             page.setDesc(pageRequest.getOrderby());
         }
+        QueryWrapper<M> queryWrapper = queryWrapperFromRequest(pageRequest);
+        IPage<M> pageResult = this.service.page(page, queryWrapper);
+        return APIResult.ok("success", pageResult);
+    }
+
+    private QueryWrapper<M> queryWrapperFromRequest(PageRequest pageRequest) throws Exception {
         QueryWrapper<M> queryWrapper = new QueryWrapper<>();
         // 模糊查询条件
         if(StringUtils.isNotBlank(pageRequest.getSearch())){
@@ -122,8 +130,19 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
                 queryWrapper = queries.get(i).fill(queryWrapper);
             }
         }
-        IPage<M> pageResult = this.service.page(page, queryWrapper);
-        return APIResult.ok("success", pageResult);
+        return queryWrapper;
+    }
+
+    /**
+     * 下载excel
+     * @param pageRequest
+     * @throws Exception
+     */
+    @GetMapping("/excel")
+    public void toExcel(@RequestBody PageRequest pageRequest)throws Exception{
+        QueryWrapper<M> queryWrapper = queryWrapperFromRequest(pageRequest);
+        List<M> list = this.service.list(queryWrapper);
+        ExcelKit.$Export(this.getModelClass(), this.response).downXlsx(list, false);
     }
 
 
