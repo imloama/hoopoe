@@ -27,4 +27,9 @@ public class MenuService extends BaseServiceImpl<MenuMapper, Menu> {
         return this.baseMapper.findUserIdsByMenuId(menuId);
     }
 
+    @Transactional(readOnly = true)
+    public List<Menu> findByRoleId(Long roleId){
+        return this.baseMapper.findByRoleId(roleId);
+    }
+
 }

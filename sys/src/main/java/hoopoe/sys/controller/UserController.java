@@ -9,6 +9,7 @@ import hoopoe.jwt.JWTToken;
 import hoopoe.jwt.JWTUtil;
 import hoopoe.sys.model.User;
 import hoopoe.sys.service.UserService;
+import hoopoe.utils.ValueCheck;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Date;
 
 
 @Api("用户管理")
@@ -30,6 +34,30 @@ public class UserController extends BaseController<User,UserService> {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
+
+    @Override
+    protected User beforeCreate(User model) throws Exception{
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        ValueCheck.isNull(model.getUsername(),"用户名不能为空！");
+        ValueCheck.isNull(model.getPwd(),"密码不能为空！");
+        model.setPwd(encoder.encode(model.getPwd()));
+        model.setStatus(User.STATUS_VALID);
+        model.setCreateTime(new Date());
+        model.setLastLoginTime(null);
+        model.setModifyTime(null);
+        return model;
+    }
+
+    @Override
+    protected User beforeUpdate(User oldModel, User newModel) throws Exception{
+        newModel.setPwd(oldModel.getPwd());
+        newModel.setModifyTime(new Date());
+        newModel.setCreateTime(oldModel.getCreateTime());
+        //newModel.setStatus(oldModel.getStatus());
+        newModel.setLastLoginTime(oldModel.getLastLoginTime());
+        newModel.setName(oldModel.getName());
+        return newModel;
+    }
 
     //修改密码，提供原密码和新密码，再重复密码
     @ApiOperation("修改密码")
@@ -90,6 +118,12 @@ public class UserController extends BaseController<User,UserService> {
         return APIResult.ok("success");
     }
 
+
+    //TODO 上传头像
+    @PostMapping("/avatar")
+    public void updateAvatar(@Token String token,@RequestParam("avatar") MultipartFile avatar) throws Exception {
+
+    }
 
     @Override
     protected Class<User> getModelClass() {
