@@ -17,7 +17,7 @@ export default {
     {
       path: '/sys/users',
       name: 'users',
-      component: () => import('@/views/sys/users'),
+      component: () => import('@/views/sys/users/users'),
       meta: { title: '用户管理', keepAlive: true, permission: [ 'users' ] }
     },
     {
