@@ -30,7 +30,6 @@ import java.util.Date;
 @RequestMapping("/api/v1/users")
 public class UserController extends BaseController<User,UserService> {
 
-
     @Autowired
     private StringRedisTemplate redisTemplate;
 
