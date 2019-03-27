@@ -2,6 +2,7 @@ package hoopoe.sys.controller;
 
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.imloama.mybatisplus.bootext.base.APIResult;
 import hoopoe.annotation.Token;
 import hoopoe.core.base.BaseController;
@@ -117,6 +118,13 @@ public class UserController extends BaseController<User,UserService> {
         return APIResult.ok("success");
     }
 
+    @GetMapping("/check/{username}")
+    public APIResult checkUsername(@PathVariable("username")  String username){
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("name", username);
+    	int count = this.service.count(queryWrapper);
+    	return APIResult.ok("success", count > 0);
+    }
 
     //TODO 上传头像
     @PostMapping("/avatar")

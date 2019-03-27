@@ -7,3 +7,10 @@ export function getDepts () {
     method: 'get'
   })
 }
+
+export function checkUsername (username) {
+  return axios({
+    method: 'get',
+    url: `/users/check/${username}`
+  })
+}
