@@ -50,12 +50,15 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
     public APIResult update(@RequestBody  M model)throws Exception{
         model = this.beforeCreate(model);
         this.service.save(model);
+        this.afterCreate(model);
         return APIResult.ok("success");
     }
 
     protected M beforeCreate(M model) throws Exception{
         return model;
     }
+
+    protected void afterCreate(M model)throws Exception {}
 
     @PostMapping("/update/{id}")
     public APIResult update(@PathVariable("id") Long id, @RequestBody  M model)throws Exception{
@@ -70,7 +73,9 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
         return newModel;
     }
 
-    @PostMapping("/del/{id}")
+    protected void afterUpdate(M oldModel,M newModel)throws Exception{}
+
+    @GetMapping("/del/{id}")
     public APIResult delete(@PathVariable("id") Long id)throws Exception{
         this.service.removeById(id);
         return APIResult.ok("success");

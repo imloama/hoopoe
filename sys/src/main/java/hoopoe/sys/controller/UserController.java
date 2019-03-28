@@ -4,11 +4,15 @@ import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.imloama.mybatisplus.bootext.base.APIResult;
+import com.google.common.collect.Lists;
 import hoopoe.annotation.Token;
 import hoopoe.core.base.BaseController;
 import hoopoe.jwt.JWTToken;
 import hoopoe.jwt.JWTUtil;
+import hoopoe.sys.model.Role;
 import hoopoe.sys.model.User;
+import hoopoe.sys.model.UserRole;
+import hoopoe.sys.service.UserRoleService;
 import hoopoe.sys.service.UserService;
 import hoopoe.utils.ValueCheck;
 import io.swagger.annotations.Api;
@@ -23,6 +27,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Api("用户管理")
@@ -34,6 +40,8 @@ public class UserController extends BaseController<User,UserService> {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
+    @Autowired
+    private UserRoleService userRoleService;
 
     @Override
     protected User beforeCreate(User model) throws Exception{
@@ -49,6 +57,19 @@ public class UserController extends BaseController<User,UserService> {
     }
 
     @Override
+    protected void afterCreate(User model) throws Exception {
+        List<Role> roles = model.getRoles();
+        if(roles == null || roles.size() == 0 || model.getId() == null)return;
+        List<UserRole> urs = roles.stream().map( r -> {
+            UserRole ur = new UserRole();
+            ur.setRoleId(r.getId());
+            ur.setUserId(model.getId());
+            return ur;
+        }).collect(Collectors.toList());
+        this.userRoleService.saveBatch(urs);
+    }
+
+    @Override
     protected User beforeUpdate(User oldModel, User newModel) throws Exception{
         newModel.setPwd(oldModel.getPwd());
         newModel.setModifyTime(new Date());
@@ -57,6 +78,33 @@ public class UserController extends BaseController<User,UserService> {
         newModel.setLastLoginTime(oldModel.getLastLoginTime());
         newModel.setName(oldModel.getName());
         return newModel;
+    }
+
+    @Override
+    protected void afterUpdate(User oldModel, User newModel) throws Exception {
+        List<Role> oldRoles = oldModel.getRoles();
+        List<Role> newRoles = newModel.getRoles();
+        List<Long> oldIds = oldRoles == null ? Lists.newArrayList() : oldRoles.stream().map(Role::getId).collect(Collectors.toList());
+        List<Long> newIds = newRoles == null ? Lists.newArrayList() : newRoles.stream().map(Role::getId).collect(Collectors.toList());
+        List<Long> needDel = Lists.newArrayList();
+        List<UserRole> needAdd = Lists.newArrayList();
+        for(int i=0,n=oldIds.size();i<n;i++){
+            if(!newIds.contains(oldIds.get(i))){
+                needDel.add(oldIds.get(i));
+            }
+        }
+        for(int i=0,n=newIds.size();i<n;i++){
+            if(!oldIds.contains(newIds.get(i))){
+                UserRole ur = new UserRole();
+                ur.setUserId(newModel.getId());
+                ur.setRoleId(newIds.get(i));
+                needAdd.add(ur);
+            }
+        }
+        QueryWrapper<UserRole> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("role_id", needDel).eq("user_id", newModel.getId());
+        this.userRoleService.remove(queryWrapper);
+        this.userRoleService.saveBatch(needAdd);
     }
 
     //修改密码，提供原密码和新密码，再重复密码
