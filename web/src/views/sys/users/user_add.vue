@@ -14,7 +14,6 @@
                    :validateStatus="validateStatus"
                    :help="help">
         <a-input v-model="user.username"
-                 @blur="handleUserNameBlur"
                  v-decorator="['username',{rules: [{ required: true, message: '用户名不能为空'}]}]"/>
       </a-form-item>
       <a-form-item label='密码' v-bind="formItemLayout">
@@ -44,7 +43,7 @@
           v-model="user.roleId"
           style="width: 100%"
           v-decorator="['role',{rules: [{ required: true, message: '请选择角色' }]}]">
-          <a-select-option v-for="r in roleData" :key="r.roleId">{{r.roleName}}</a-select-option>
+          <a-select-option v-for="r in roleData" :key="r.id">{{r.name}}</a-select-option>
         </a-select>
       </a-form-item>
       <a-form-item label='部门' v-bind="formItemLayout">
@@ -83,6 +82,8 @@
   </a-drawer>
 </template>
 <script>
+import { mapState, mapActions } from 'vuex'
+import { createUser } from '@/api/sys'
 const formItemLayout = {
   labelCol: { span: 3 },
   wrapperCol: { span: 18 }
@@ -100,8 +101,6 @@ export default {
         username: ''
       },
       loading: false,
-      roleData: [],
-      deptTreeData: [],
       formItemLayout,
       defaultPassword: '123',
       form: this.$form.createForm(this),
@@ -109,7 +108,21 @@ export default {
       help: ''
     }
   },
+  computed:{
+    ...mapState({
+      roleData: state => state.sys.rolePage,
+      deptTreeData: state => state.sys.deptTree
+    })
+  },
+  created(){
+    Promise.all([this.getRolePage(), this.getDeptTree()])
+      .then(r => {})
+      .catch(err=>{
+        this.$message.warning(err.message)
+      })
+  },
   methods: {
+    ...mapActions(['getDeptTree','getRolePage']),
     reset () {
       this.validateStatus = ''
       this.help = ''
@@ -122,61 +135,21 @@ export default {
       this.$emit('close')
     },
     handleSubmit () {
-      if (this.validateStatus !== 'success') {
-        this.handleUserNameBlur()
-      }
       this.form.validateFields((err, values) => {
-        if (!err && this.validateStatus === 'success') {
-          this.loading = true
-          this.user.roleId = this.user.roleId.join(',')
-          this.$post('user', {
-            ...this.user
-          }).then((r) => {
-            this.reset()
-            this.$emit('success')
-          }).catch(() => {
-            this.loading = false
-          })
-        }
+        if(err)return
+        this.loading = true
+        const roles = this.user.roleId.map(id => {id})
+        createUser({
+          ...this.user,
+          roles
+        }).then((r) => {
+          this.reset()
+          this.$emit('success')
+        }).catch(err => {
+          this.$message.warning(err.message)
+          this.loading = false
+        })
       })
-    },
-    handleUserNameBlur () {
-      let username = this.user.username.trim()
-      if (username.length) {
-        if (username.length > 10) {
-          this.validateStatus = 'error'
-          this.help = '用户名不能超过10个字符'
-        } else if (username.length < 4) {
-          this.validateStatus = 'error'
-          this.help = '用户名不能少于4个字符'
-        } else {
-          this.validateStatus = 'validating'
-          this.$get(`user/check/${username}`).then((r) => {
-            if (r.data) {
-              this.validateStatus = 'success'
-              this.help = ''
-            } else {
-              this.validateStatus = 'error'
-              this.help = '抱歉，该用户名已存在'
-            }
-          })
-        }
-      } else {
-        this.validateStatus = 'error'
-        this.help = '用户名不能为空'
-      }
-    }
-  },
-  watch: {
-    userAddVisiable () {
-      if (this.userAddVisiable) {
-        this.$get('role').then((r) => {
-          this.roleData = r.data.rows
-        })
-        this.$get('dept').then((r) => {
-          this.deptTreeData = r.data.rows.children
-        })
-      }
     }
   }
 }
