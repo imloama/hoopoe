@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.imloama.mybatisplus.bootext.base.APIResult;
 import com.github.imloama.mybatisplus.bootext.base.BaseService;
 import com.wuwenze.poi.ExcelKit;
+import hoopoe.core.zfarm.Farm;
+import hoopoe.core.zfarm.Field;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +41,14 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
     protected StringRedisTemplate redisTemplate;
 
     protected abstract Class<M> getModelClass();
+
+    @GetMapping("/zfarm")
+    public APIResult zfarm()throws Exception{
+
+
+        return APIResult.fail("noimplements");
+    }
+
 
     @GetMapping("/{id}")
     public APIResult getById(@PathVariable("id") Long id)throws Exception{
