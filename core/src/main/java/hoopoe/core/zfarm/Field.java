@@ -14,7 +14,9 @@ import java.util.List;
 public class Field implements Serializable {
 
     private FieldType type;
+    private boolean search = true;//是否可以查询
     private boolean show = true;//是否展示
+    private boolean edit = true;//是否可编辑
     private String id;
     private String name;
     private String label;
@@ -23,7 +25,12 @@ public class Field implements Serializable {
     private List<Rule> rules = Lists.newArrayList();
     private List<Field> children = Lists.newArrayList();
     // 可能的选项
-    private List<Object> options;
+    private List<Option> options;
+
+    /**
+     * 参加类型时
+     */
+    private Ref ref;
 
     public Field addRule(Rule rule){
         this.rules.add(rule);

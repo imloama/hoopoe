@@ -6,16 +6,20 @@ public enum FieldType {
     None("none"),
     String("String"),
     Email("Email"),
+    Password("password"),
     Telphone("Telphone"),
     IP("IP"),
     URL("URL"),
+    Image("image"),
+    File("file"),
     Number("Number"),
     Integer("Integer"),
     Float("Float"),
     Date("date"),
     DateTime("datetime"),
     Time("time"),
-    Ref("ref")
+    Ref("ref"),
+    Select("select")
     ;
 
     private String value;

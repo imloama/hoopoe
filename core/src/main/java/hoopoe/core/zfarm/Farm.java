@@ -12,6 +12,7 @@ import java.util.List;
 @Data
 public class Farm<M extends BaseModel<M,? extends Serializable>> {
 
+    private String apiprefix;
     private String primaryKey;
     List<Field> fields;
 
