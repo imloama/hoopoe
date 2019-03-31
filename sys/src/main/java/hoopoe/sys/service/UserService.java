@@ -1,8 +1,7 @@
 package hoopoe.sys.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.github.imloama.mybatisplus.bootext.base.BaseServiceImpl;
-import hoopoe.core.HoopoeConsts;
+import hoopoe.core.base.BaseServiceImpl;
 import hoopoe.jwt.JWTUtil;
 import hoopoe.sys.mapper.UserMapper;
 import hoopoe.sys.model.Menu;
@@ -41,6 +40,22 @@ public class UserService extends BaseServiceImpl<UserMapper, User> implements Us
     @Autowired
     private AuthenticationManager authenticationManager;
 
+
+    /**
+     * 创建用户
+     * @param entity
+     * @return
+     */
+    @Override
+    public boolean create(User entity) {
+
+        return super.create(entity);
+    }
+
+    @Override
+    public boolean update(User entity) {
+        return super.update(entity);
+    }
 
     @Transactional(readOnly = true)
     public User getByName(String name){

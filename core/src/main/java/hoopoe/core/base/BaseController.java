@@ -1,5 +1,6 @@
 package hoopoe.core.base;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,6 +9,7 @@ import com.github.imloama.mybatisplus.bootext.base.BaseService;
 import com.wuwenze.poi.ExcelKit;
 import hoopoe.core.zfarm.Farm;
 import hoopoe.core.zfarm.Field;
+import hoopoe.core.zfarm.ZFarmAnnotationHandler;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -44,9 +46,16 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
 
     @GetMapping("/zfarm")
     public APIResult zfarm()throws Exception{
-
-
-        return APIResult.fail("noimplements");
+        String key = this.getModelClass().getName() + ":zfarm";
+        String val = this.redisTemplate.opsForValue().get(key);
+        if(StringUtils.isNotBlank(val)){
+            return APIResult.ok("success", JSON.parseObject(val, Farm.class));
+        }
+        Farm<M> farm = ZFarmAnnotationHandler.handler(this.getModelClass());
+        if(farm == null)return APIResult.fail("no farm");
+        val = JSON.toJSONString(farm);
+        this.redisTemplate.opsForValue().set(key, val);
+        return APIResult.ok("success", farm);
     }
 
 
@@ -160,6 +169,10 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
         ExcelKit.$Export(this.getModelClass(), this.response).downXlsx(list, false);
     }
 
+    @GetMapping("/action/{name}/{id}")
+    public APIResult action(@PathVariable("name") String name, @PathVariable("id") Long id){
+        return APIResult.fail("no implements");
+    }
 
 
 
