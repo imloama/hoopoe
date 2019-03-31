@@ -10,5 +10,6 @@ public class Ref implements Serializable {
     private String apiPrefix;
     private String primaryKey;
     private String labelKey;
+    private String parentKey;
 
 }

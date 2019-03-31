@@ -24,7 +24,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@ZFarm(value="users")
+@ZFarm(apiPrefix="/api/v1/users", actions = {
+        @ZAction(name = "lock", label = "锁定", filter = "${status} == 0")
+})
 @Data
 @TableName("sys_user")
 @Excel("用户信息表")
@@ -126,7 +128,7 @@ public class User extends BaseModel<User,Long> implements UserDetails {
     private String memo;//'备注' ,
 
     @ZField(type = FieldType.Ref, name = "deptId", label = "部门", ref = {
-            @ZRef(primaryKey = "id", labelKey = "name", value = "depts", parentKey = "parentId")
+            @ZRef(primaryKey = "id", labelKey = "name", apiPrefix = "/api/v1/depts", parentKey = "parentId")
     })
     private Long deptId;
 

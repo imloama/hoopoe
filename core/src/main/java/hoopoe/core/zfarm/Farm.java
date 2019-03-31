@@ -14,6 +14,9 @@ public class Farm<M extends BaseModel<M,? extends Serializable>> {
 
     private String apiprefix;
     private String primaryKey;
+    // 是否树形结构
+    private boolean tree = false;
     List<Field> fields;
+    List<Action> actions;
 
 }

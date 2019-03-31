@@ -17,7 +17,6 @@ public class Field implements Serializable {
     private boolean search = true;//是否可以查询
     private boolean show = true;//是否展示
     private boolean edit = true;//是否可编辑
-    private String id;
     private String name;
     private String label;
     private boolean showLabel = true;
