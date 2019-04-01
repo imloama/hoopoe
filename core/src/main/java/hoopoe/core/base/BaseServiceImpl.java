@@ -7,12 +7,12 @@ public abstract class BaseServiceImpl<M extends BaseMapper<T>, T extends BaseMod
         implements BaseService<T>{
 
     @Override
-    public boolean create(T entity) {
+    public boolean create(T entity) throws Exception{
         return this.save(entity);
     }
 
     @Override
-    public boolean update(T entity) {
+    public boolean update(T entity)throws Exception {
         return this.updateById(entity);
     }
 

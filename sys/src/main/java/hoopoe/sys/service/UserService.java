@@ -1,12 +1,16 @@
 package hoopoe.sys.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.github.imloama.mybatisplus.bootext.base.CustomException;
+import com.google.common.collect.Lists;
 import hoopoe.core.base.BaseServiceImpl;
 import hoopoe.jwt.JWTUtil;
 import hoopoe.sys.mapper.UserMapper;
 import hoopoe.sys.model.Menu;
 import hoopoe.sys.model.Role;
 import hoopoe.sys.model.User;
+import hoopoe.sys.model.UserRole;
+import hoopoe.utils.ValueCheck;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,21 +44,76 @@ public class UserService extends BaseServiceImpl<UserMapper, User> implements Us
     @Autowired
     private AuthenticationManager authenticationManager;
 
-
+    @Autowired
+    private UserRoleService userRoleService;
     /**
      * 创建用户
-     * @param entity
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public boolean create(User entity) {
-
-        return super.create(entity);
+    public boolean create(User model) throws Exception{
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        ValueCheck.isNull(model.getUsername(),"用户名不能为空！");
+        ValueCheck.isNull(model.getPwd(),"密码不能为空！");
+        model.setPwd(encoder.encode(model.getPwd()));
+        model.setStatus(User.STATUS_VALID);
+        model.setCreateTime(new Date());
+        model.setLastLoginTime(null);
+        model.setModifyTime(null);
+        List<Role> roles = model.getRoles();
+        boolean result = super.create(model);
+        if(!result)throw new CustomException("新增用户失败！");
+        if(roles == null || roles.size() == 0 || model.getId() == null)return result;
+        List<UserRole> urs = roles.stream().map(r -> {
+            UserRole ur = new UserRole();
+            ur.setRoleId(r.getId());
+            ur.setUserId(model.getId());
+            return ur;
+        }).collect(Collectors.toList());
+        this.userRoleService.saveBatch(urs);
+        return result;
     }
 
     @Override
-    public boolean update(User entity) {
-        return super.update(entity);
+    public boolean update(User newModel) throws Exception {
+        User oldModel = this.getById(newModel.getId());
+        newModel.setPwd(oldModel.getPwd());
+        newModel.setModifyTime(new Date());
+        newModel.setCreateTime(oldModel.getCreateTime());
+        //newModel.setStatus(oldModel.getStatus());
+        newModel.setLastLoginTime(oldModel.getLastLoginTime());
+        newModel.setName(oldModel.getName());
+        boolean result = super.update(newModel);
+        if(!result)throw new Exception("更新失败！");
+        this.afterUpdate(oldModel, newModel);
+        return result;
+    }
+
+    protected void afterUpdate(User oldModel, User newModel) throws Exception {
+        List<Role> oldRoles = oldModel.getRoles();
+        List<Role> newRoles = newModel.getRoles();
+        List<Long> oldIds = oldRoles == null ? Lists.newArrayList() : oldRoles.stream().map(Role::getId).collect(Collectors.toList());
+        List<Long> newIds = newRoles == null ? Lists.newArrayList() : newRoles.stream().map(Role::getId).collect(Collectors.toList());
+        List<Long> needDel = Lists.newArrayList();
+        List<UserRole> needAdd = Lists.newArrayList();
+        for(int i=0,n=oldIds.size();i<n;i++){
+            if(!newIds.contains(oldIds.get(i))){
+                needDel.add(oldIds.get(i));
+            }
+        }
+        for(int i=0,n=newIds.size();i<n;i++){
+            if(!oldIds.contains(newIds.get(i))){
+                UserRole ur = new UserRole();
+                ur.setUserId(newModel.getId());
+                ur.setRoleId(newIds.get(i));
+                needAdd.add(ur);
+            }
+        }
+        QueryWrapper<UserRole> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("role_id", needDel).eq("user_id", newModel.getId());
+        this.userRoleService.remove(queryWrapper);
+        this.userRoleService.saveBatch(needAdd);
     }
 
     @Transactional(readOnly = true)

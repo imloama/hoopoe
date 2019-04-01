@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.imloama.mybatisplus.bootext.base.APIResult;
-import com.github.imloama.mybatisplus.bootext.base.BaseService;
 import com.wuwenze.poi.ExcelKit;
 import hoopoe.core.zfarm.Farm;
 import hoopoe.core.zfarm.Field;
@@ -66,33 +65,19 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
     }
 
     @PostMapping("/create")
-    public APIResult update(@RequestBody  M model)throws Exception{
-        model = this.beforeCreate(model);
-        this.service.save(model);
-        this.afterCreate(model);
+    public APIResult create(@RequestBody  M model)throws Exception{
+        this.service.create(model);
         return APIResult.ok("success");
     }
 
-    protected M beforeCreate(M model) throws Exception{
-        return model;
-    }
-
-    protected void afterCreate(M model)throws Exception {}
 
     @PostMapping("/update/{id}")
     public APIResult update(@PathVariable("id") Long id, @RequestBody  M model)throws Exception{
         if(id!=model.getPrimaryKey())return APIResult.fail("参数错误！");
-        M old = this.service.getById(id);
-        model = this.beforeUpdate(old, model);
-        this.service.updateById(model);
+        this.service.update(model);
         return APIResult.ok("success");
     }
 
-    protected M beforeUpdate(M oldModel,M newModel)throws Exception{
-        return newModel;
-    }
-
-    protected void afterUpdate(M oldModel,M newModel)throws Exception{}
 
     @GetMapping("/del/{id}")
     public APIResult delete(@PathVariable("id") Long id)throws Exception{
@@ -170,8 +155,9 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
     }
 
     @GetMapping("/action/{name}/{id}")
-    public APIResult action(@PathVariable("name") String name, @PathVariable("id") Long id){
-        return APIResult.fail("no implements");
+    public APIResult action(@PathVariable("name") String name, @PathVariable("id") Long id) throws Exception {
+        this.service.doAction(name, id);
+        return APIResult.ok("success");
     }
 
 

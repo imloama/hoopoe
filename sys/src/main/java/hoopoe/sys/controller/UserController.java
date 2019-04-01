@@ -43,69 +43,6 @@ public class UserController extends BaseController<User,UserService> {
     @Autowired
     private UserRoleService userRoleService;
 
-    @Override
-    protected User beforeCreate(User model) throws Exception{
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        ValueCheck.isNull(model.getUsername(),"用户名不能为空！");
-        ValueCheck.isNull(model.getPwd(),"密码不能为空！");
-        model.setPwd(encoder.encode(model.getPwd()));
-        model.setStatus(User.STATUS_VALID);
-        model.setCreateTime(new Date());
-        model.setLastLoginTime(null);
-        model.setModifyTime(null);
-        return model;
-    }
-
-    @Override
-    protected void afterCreate(User model) throws Exception {
-        List<Role> roles = model.getRoles();
-        if(roles == null || roles.size() == 0 || model.getId() == null)return;
-        List<UserRole> urs = roles.stream().map( r -> {
-            UserRole ur = new UserRole();
-            ur.setRoleId(r.getId());
-            ur.setUserId(model.getId());
-            return ur;
-        }).collect(Collectors.toList());
-        this.userRoleService.saveBatch(urs);
-    }
-
-    @Override
-    protected User beforeUpdate(User oldModel, User newModel) throws Exception{
-        newModel.setPwd(oldModel.getPwd());
-        newModel.setModifyTime(new Date());
-        newModel.setCreateTime(oldModel.getCreateTime());
-        //newModel.setStatus(oldModel.getStatus());
-        newModel.setLastLoginTime(oldModel.getLastLoginTime());
-        newModel.setName(oldModel.getName());
-        return newModel;
-    }
-
-    @Override
-    protected void afterUpdate(User oldModel, User newModel) throws Exception {
-        List<Role> oldRoles = oldModel.getRoles();
-        List<Role> newRoles = newModel.getRoles();
-        List<Long> oldIds = oldRoles == null ? Lists.newArrayList() : oldRoles.stream().map(Role::getId).collect(Collectors.toList());
-        List<Long> newIds = newRoles == null ? Lists.newArrayList() : newRoles.stream().map(Role::getId).collect(Collectors.toList());
-        List<Long> needDel = Lists.newArrayList();
-        List<UserRole> needAdd = Lists.newArrayList();
-        for(int i=0,n=oldIds.size();i<n;i++){
-            if(!newIds.contains(oldIds.get(i))){
-                needDel.add(oldIds.get(i));
-            }
-        }
-        for(int i=0,n=newIds.size();i<n;i++){
-            if(!oldIds.contains(newIds.get(i))){
-                UserRole ur = new UserRole();
-                ur.setUserId(newModel.getId());
-                ur.setRoleId(newIds.get(i));
-                needAdd.add(ur);
-            }
-        }
-        QueryWrapper<UserRole> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("role_id", needDel).eq("user_id", newModel.getId());
-        this.userRoleService.remove(queryWrapper);
-        this.userRoleService.saveBatch(needAdd);
-    }
 
     //修改密码，提供原密码和新密码，再重复密码
     @ApiOperation("修改密码")
@@ -140,11 +77,8 @@ public class UserController extends BaseController<User,UserService> {
     @ApiOperation("重置密码接口，只有管理员可以操作")
     @Secured(value = "admin")
     @GetMapping("/adminresetpwd")
-    public APIResult resetPwdByAdmin(@Token String token, @RequestBody JSONObject params){
-        String username = params.getString("username");
-        if(StringUtils.isBlank(username))return APIResult.fail("请提供用户名称！");
-        User user = this.service.getByName(username);
-        if(user == null)return APIResult.fail("用户不存在！");
+    public APIResult resetPwdByAdmin(@Token String token, @RequestBody JSONObject params) throws Exception {
+        User user = getByParam(params);
         String pwd = RandomUtil.randomString(6);
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String pwdEncode = encoder.encode(pwd);
@@ -153,14 +87,18 @@ public class UserController extends BaseController<User,UserService> {
         return APIResult.ok("success", pwd);
     }
 //
+    private User getByParam(JSONObject params)throws Exception{
+        String username = params.getString("username");
+        if(StringUtils.isBlank(username))throw  new Exception("请提供用户名称！");
+        User user = this.service.getByName(username);
+        if(user == null)throw  new Exception("用户不存在！");
+        return user;
+    }
 
     //禁用用户
     @GetMapping("/lockuser")
-    public APIResult lockUser(@Token String token, @RequestBody JSONObject params){
-        String username = params.getString("username");
-        if(StringUtils.isBlank(username))return APIResult.fail("请提供用户名称！");
-        User user = this.service.getByName(username);
-        if(user == null)return APIResult.fail("用户不存在！");
+    public APIResult lockUser(@Token String token, @RequestBody JSONObject params) throws Exception {
+        User user = getByParam(params);
         user.setStatus(User.STATUS_LOCK);
         this.service.updateById(user);
         return APIResult.ok("success");
