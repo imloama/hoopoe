@@ -30,6 +30,8 @@ public @interface ZFarm {
 
     boolean tree() default false;
 
+    String parentKey() default "";
+
     ZAction[] actions() default {};
 
 }

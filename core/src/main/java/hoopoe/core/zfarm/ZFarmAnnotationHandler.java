@@ -24,6 +24,7 @@ public class ZFarmAnnotationHandler {
         farm.setApiprefix(zfarm.apiPrefix());
         farm.setPrimaryKey(zfarm.primaryKey());
         farm.setTree(zfarm.tree());
+        farm.setParentKey(zfarm.parentKey());
         ZAction[] zActions = zfarm.actions();
         if(zActions!=null&&zActions.length>0){
             List<Action> actions = Lists.newArrayList();

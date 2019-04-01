@@ -35,8 +35,8 @@ public @interface ZField {
      */
     boolean edit() default true;
 
-    String name() default "";
-    String label() default "";
+    String name();
+    String label();
     boolean showLabel() default true;
     String format() default "";//格式化输出
     ZRule[] rules() default {};
