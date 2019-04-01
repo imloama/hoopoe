@@ -10,6 +10,7 @@ import hoopoe.core.zfarm.FieldType;
 import hoopoe.core.zfarm.RulePattern;
 import hoopoe.core.zfarm.annotation.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,13 +25,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@EqualsAndHashCode(callSuper = true)
 @ZFarm(apiPrefix="/api/v1/users", actions = {
-        @ZAction(name = "lock", label = "锁定", filter = "${status} == 0")
+        @ZAction(name = User.UNLOCK, label = "解锁", filter = "${status} === 1"),
+        @ZAction(name = User.LOCK, label = "锁定", filter = "${status} === 0")
 })
 @Data
 @TableName("sys_user")
 @Excel("用户信息表")
 public class User extends BaseModel<User,Long> implements UserDetails {
+
+    public static final String LOCK = "lock";
+    public static final String UNLOCK = "unlock";
+
     /**
      * 账户状态
      */

@@ -7,12 +7,19 @@ import com.wuwenze.poi.annotation.Excel;
 import com.wuwenze.poi.annotation.ExcelField;
 import hoopoe.core.base.BaseModel;
 import hoopoe.core.excel.convert.TimeConverter;
+import hoopoe.core.zfarm.annotation.ZFarm;
+import hoopoe.core.zfarm.annotation.ZFarmId;
+import hoopoe.core.zfarm.annotation.ZField;
+import hoopoe.core.zfarm.annotation.ZRule;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Date;
 
+@EqualsAndHashCode(callSuper = true)
+@ZFarm(apiPrefix = "/api/v1/roles")
 @Data
 @TableName("sys_role")
 @Excel("角色信息表")
@@ -20,14 +27,19 @@ public class Role extends BaseModel<Role,Long> {
 
     private static final long serialVersionUID = -1714476694755654924L;
 
+    @ZFarmId
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @ZField(name = "name", label = "角色名称", rules = {
+            @ZRule(required = true)
+    })
     @NotBlank(message = "必填项")
     @Size(max = 10, message = "长度限制")
     @ExcelField(value = "角色名称")
     private String name;
 
+    @ZField(name = "remark", label = "角色描述")
     @Size(max = 50, message = "长度限制")
     @ExcelField(value = "角色描述")
     private String remark;

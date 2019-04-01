@@ -26,6 +26,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -114,6 +115,22 @@ public class UserService extends BaseServiceImpl<UserMapper, User> implements Us
         queryWrapper.in("role_id", needDel).eq("user_id", newModel.getId());
         this.userRoleService.remove(queryWrapper);
         this.userRoleService.saveBatch(needAdd);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void doAction(String action, Serializable id) throws Exception {
+        User user = this.getById(id);
+        if(user == null)throw new Exception("未找到用户");
+        if(User.LOCK.equals(action)){
+            if(user.getStatus()!=User.STATUS_VALID)throw new Exception("用户已经被锁定");
+            user.setStatus(User.STATUS_LOCK);
+            this.updateById(user);
+        }else if(User.UNLOCK.equals(action)){
+            if(user.getStatus()!=User.STATUS_LOCK)throw new Exception("用户已经解锁了");
+            user.setStatus(User.STATUS_VALID);
+            this.updateById(user);
+        }
     }
 
     @Transactional(readOnly = true)

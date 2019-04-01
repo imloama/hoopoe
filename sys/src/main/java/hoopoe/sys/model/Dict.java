@@ -7,12 +7,15 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.wuwenze.poi.annotation.Excel;
 import com.wuwenze.poi.annotation.ExcelField;
 import hoopoe.core.base.BaseModel;
+import hoopoe.core.zfarm.annotation.ZFarm;
+import hoopoe.core.zfarm.annotation.ZFarmId;
 import lombok.Data;
 import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+@ZFarm(apiPrefix = "/api/v1/dicts")
 @Data
 @ToString
 @TableName("sys_dict")
@@ -21,6 +24,7 @@ public class Dict extends BaseModel<Dict,Long> {
 
     private static final long serialVersionUID = 7780820231535870010L;
 
+    @ZFarmId
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
