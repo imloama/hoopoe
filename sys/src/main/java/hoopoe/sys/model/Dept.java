@@ -44,7 +44,7 @@ public class Dept extends BaseModel<Dept,Long> implements ITree {
     @Size(max = 20, message = "长度限制")
     @ExcelField(value = "部门名称")
     private String name;
-    
+
     @ZField(name = "orderBy", label = "排序")
     private Integer orderBy;
 

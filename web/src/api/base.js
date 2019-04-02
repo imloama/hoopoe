@@ -1,5 +1,16 @@
 import { axios } from '@/utils/request'
 
+/**
+ * 查询zfarm数据
+ * @param {string} name url名称
+ */
+export function getZFarm (name) {
+  return axios({
+    method: 'get',
+    url: `/${name}`
+  })
+}
+
 // 查询对象
 export function getModel (name, id, params) {
   return axios({
