@@ -3,10 +3,12 @@ import * as base from '@/api/base'
 
 export const SET_ZFARM_INFO = 'SET_ZFARM_INFO'
 export const SET_ZFARM_PAGE = 'SET_ZFARM_PAGE'
+export const SET_MODELS_INFO = 'SET_MODELS_INFO'
 
 const state = {
   zfarms: {},
-  pages: {}
+  pages: {},
+  models: {}
 }
 
 const actions = {
@@ -19,17 +21,12 @@ const actions = {
   async pageInfo ({ commit, state }, { name, params }) {
     const result = await base.getModelPage(name, params)
     commit(SET_ZFARM_PAGE, name, params, result)
-  }
+  },
   // 根据id查询模型信息
-
-  // 新建对象
-
-  // 修改对象
-
-  // 删除多个对象
-
-  // 执行对象的action
-
+  async modelInfoById ({ commit, state }, { name, id }) {
+    const result = await base.getModel(name, id)
+    commit(SET_MODELS_INFO, name, id, result)
+  }
 }
 
 const mutations = {
@@ -39,6 +36,10 @@ const mutations = {
   [SET_ZFARM_PAGE] (state, name, params, result) {
     const page = result.data
     state.pages[name] = page
+  },
+  [SET_MODELS_INFO] (state, name, id, result) {
+    const key = name + ':' + id
+    state.models[key] = result.data
   }
 }
 

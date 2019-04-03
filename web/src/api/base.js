@@ -12,7 +12,7 @@ export function getZFarm (name) {
 }
 
 // 查询对象
-export function getModel (name, id, params) {
+export function getModel (name, id) {
   return axios({
     method: 'get',
     url: `/${name}/${id}`
