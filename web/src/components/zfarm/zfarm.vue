@@ -39,7 +39,9 @@
     </div>
 
     <!--2. 操作按钮区-->
+    <s-table  :rowKey="rowKey" :columns="columns" :data="loadTableData">  
 
+    </s-table>
     <!--3. 表格区 及每行数据操作-->
 
     <!--4. 新增-->
@@ -89,6 +91,13 @@ export default {
     },
     searchFields(){
       return this.fields.filter(item => item.search && item.type!=='none')
+    },
+    rowKey(){
+      return "id"
+    },
+    // 表格列定义
+    columns(){
+      return []
     }
 
   },
@@ -103,6 +112,9 @@ export default {
         console.error(err)
         this.$notification.error('请求发生错误！')
       })
+    },
+    loadTableData(){
+      // 加载表体数据，返回promise
     }
   }
 
