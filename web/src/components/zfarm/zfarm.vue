@@ -92,6 +92,10 @@ export default {
     searchFields(){
       return this.fields.filter(item => item.search && item.type!=='none')
     },
+    tableSlots(){
+      
+      return this.fields.filter(item=> item.type===‘selected’)
+    },
     rowKey(){
       return "id"
     },
