@@ -40,7 +40,9 @@
 
     <!--2. 操作按钮区-->
     <s-table  :rowKey="rowKey" :columns="columns" :data="loadTableData">  
+      <template v-for="item in tableSlots">
 
+      </template>
     </s-table>
     <!--3. 表格区 及每行数据操作-->
 
@@ -87,17 +89,16 @@ export default {
       return this.zfarms[this.name] || {}
     },
     fields(){
-      return this.farm.fields || []
+      return this.zfarms.fields || []
     },
     searchFields(){
       return this.fields.filter(item => item.search && item.type!=='none')
     },
     tableSlots(){
-      
-      return this.fields.filter(item=> item.type===‘selected’)
+      return this.fields.filter(item=> item.type==='Select' || item.type ==='Ref'  || item.type ==='Date' || item.type ==='DateTime'  || item.type ==='Time')
     },
     rowKey(){
-      return "id"
+      return this.zfarms.primaryKey || "id"
     },
     // 表格列定义
     columns(){

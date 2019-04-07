@@ -3,23 +3,23 @@ package hoopoe.core.zfarm;
 public enum FieldType {
 
     // 无类型
-    None("none"),
+    None("None"),
     String("String"),
     Email("Email"),
-    Password("password"),
+    Password("Password"),
     Telphone("Telphone"),
     IP("IP"),
     URL("URL"),
-    Image("image"),
-    File("file"),
+    Image("Image"),
+    File("File"),
     Number("Number"),
     Integer("Integer"),
     Float("Float"),
-    Date("date"),
-    DateTime("datetime"),
-    Time("time"),
-    Ref("ref"),
-    Select("select")
+    Date("Date"),
+    DateTime("DateTime"),
+    Time("Time"),
+    Ref("Ref"),
+    Select("Select")
     ;
 
     private String value;
