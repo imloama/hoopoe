@@ -54,7 +54,7 @@
                :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
                :scroll="{ x: 900 }"
                @change="handleTableChange">
-        <template slot="email" slot-scope="text, record">
+        <template slot="email" slot-scope="text">
           <a-popover placement="topLeft">
             <template slot="content">
               <div>{{text}}</div>
@@ -66,7 +66,6 @@
           <a-icon v-action="'user:update'" type="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="edit(record)" title="修改用户"></a-icon>
           &nbsp;
           <a-icon v-action="'user:view'" type="eye" theme="twoTone" twoToneColor="#42b983" @click="view(record)" title="查看"></a-icon>
-          <a-badge v-hasNoPermission="'user:update','user:view'" status="warning" text="无权限"></a-badge>
         </template>
       </a-table>
     </div>
@@ -81,7 +80,7 @@ import UserAdd from './UserAdd'
 import UserEdit from './UserEdit'
 export default {
   name: 'User',
-  components: {UserInfo, UserAdd, UserEdit, DeptInputTree, RangeDate},
+  components: {UserInfo, UserAdd, UserEdit, DeptInputTree},
   data () {
     return {
       advanced: false,
@@ -105,7 +104,7 @@ export default {
       pagination: {
         pageSizeOptions: ['10', '20', '30', '40', '100'],
         defaultCurrent: 1,
-        defaultPageSize: 10,
+        defaultPageSize: 50,
         showQuickJumper: true,
         showSizeChanger: true,
         showTotal: (total, range) => `显示 ${range[0]} ~ ${range[1]} 条记录，共 ${total} 条记录`

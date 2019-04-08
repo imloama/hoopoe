@@ -28,11 +28,13 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['getDeptTree']),
     reset () {
       this.value = ''
     }
   },
-  mounted () {
+  created () {
+    this.getDeptTree().then(()=>{}).catch(err=>console.log(err))
   },
   watch: {
     value (value) {
