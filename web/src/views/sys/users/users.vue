@@ -78,12 +78,14 @@ import UserInfo from './user_info'
 import DeptInputTree from '@/components/sys/dept_input_tree'
 import UserAdd from './UserAdd'
 import UserEdit from './UserEdit'
+import basemixin from '@/mixins/base'
+
 export default {
-  name: 'User',
+  name: 'Users',
+  mixins: [basemixin],
   components: {UserInfo, UserAdd, UserEdit, DeptInputTree},
   data () {
     return {
-      advanced: false,
       userInfo: {
         visiable: false,
         data: {}
@@ -94,21 +96,7 @@ export default {
       userEdit: {
         visiable: false
       },
-      queryParams: {},
-      filteredInfo: null,
-      sortedInfo: null,
-      paginationInfo: null,
-      dataSource: [],
       selectedRowKeys: [],
-      loading: false,
-      pagination: {
-        pageSizeOptions: ['10', '20', '30', '40', '100'],
-        defaultCurrent: 1,
-        defaultPageSize: 50,
-        showQuickJumper: true,
-        showSizeChanger: true,
-        showTotal: (total, range) => `显示 ${range[0]} ~ ${range[1]} 条记录，共 ${total} 条记录`
-      }
     }
   },
   computed: {
@@ -118,17 +106,17 @@ export default {
       filteredInfo = filteredInfo || {}
       return [{
         title: '用户名',
-        dataIndex: 'username',
+        dataIndex: 'name',
         sorter: true,
-        sortOrder: sortedInfo.columnKey === 'username' && sortedInfo.order
+        sortOrder: sortedInfo.columnKey === 'name' && sortedInfo.order
       }, {
         title: '性别',
-        dataIndex: 'ssex',
+        dataIndex: 'sex',
         customRender: (text, row, index) => {
           switch (text) {
-            case '0':
-              return '男'
             case '1':
+              return '男'
+            case '0':
               return '女'
             case '2':
               return '保密'
@@ -137,13 +125,13 @@ export default {
           }
         },
         filters: [
-          { text: '男', value: '0' },
-          { text: '女', value: '1' },
+          { text: '男', value: '1' },
+          { text: '女', value: '0' },
           { text: '保密', value: '2' }
         ],
         filterMultiple: false,
-        filteredValue: filteredInfo.ssex || null,
-        onFilter: (value, record) => record.ssex.includes(value)
+        filteredValue: filteredInfo.sex || null,
+        onFilter: (value, record) => record.sex.includes(value)
       }, {
         title: '邮箱',
         dataIndex: 'email',
@@ -160,17 +148,17 @@ export default {
         dataIndex: 'status',
         customRender: (text, row, index) => {
           switch (text) {
-            case '0':
-              return <a-tag color="red">锁定</a-tag>
             case '1':
+              return <a-tag color="red">锁定</a-tag>
+            case '0':
               return <a-tag color="cyan">有效</a-tag>
             default:
               return text
           }
         },
         filters: [
-          { text: '有效', value: '1' },
-          { text: '锁定', value: '0' }
+          { text: '有效', value: '0' },
+          { text: '锁定', value: '1' }
         ],
         filterMultiple: false,
         filteredValue: filteredInfo.status || null,
@@ -187,19 +175,14 @@ export default {
       }]
     }
   },
+  created () {
+    this.modelname = 'users'
+  },
   mounted () {
-    this.fetch()
   },
   methods: {
     onSelectChange (selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys
-    },
-    toggleAdvanced () {
-      this.advanced = !this.advanced
-      if (!this.advanced) {
-        this.queryParams.createTimeFrom = ''
-        this.queryParams.createTimeTo = ''
-      }
     },
     view (record) {
       this.userInfo.data = record
@@ -255,7 +238,7 @@ export default {
           for (let key of that.selectedRowKeys) {
             userIds.push(that.dataSource[key].userId)
           }
-          that.$delete('user/' + userIds.join(',')).then(() => {
+          this.deleteAllById(userIds).then(() => {
             that.$message.success('删除成功')
             that.selectedRowKeys = []
             that.search()
@@ -274,53 +257,23 @@ export default {
       let that = this
       this.$confirm({
         title: '确定重置选中用户密码?',
-        content: '当您点击确定按钮后，这些用户的密码将会重置为1234qwer',
+        content: '当您点击确定按钮后，这些用户的密码将会被重置！',
         centered: true,
         onOk () {
-          let usernames = []
+          let ids = []
           for (let key of that.selectedRowKeys) {
-            usernames.push(that.dataSource[key].username)
+            ids.push(that.dataSource[key].id)
           }
-          that.$put('user/password/reset', {
-            usernames: usernames.join(',')
-          }).then(() => {
-            that.$message.success('重置用户密码成功')
+
+          this.api.post(`/${this.modelname}/adminresetpwd`, { ids })
+            .then(result => {
+            that.$message.success('重置用户密码成功，重置后的密码为:' + result.data)
             that.selectedRowKeys = []
           })
         },
         onCancel () {
           that.selectedRowKeys = []
         }
-      })
-    },
-    exportExcel () {
-      let {sortedInfo, filteredInfo} = this
-      let sortField, sortOrder
-      // 获取当前列的排序和列的过滤规则
-      if (sortedInfo) {
-        sortField = sortedInfo.field
-        sortOrder = sortedInfo.order
-      }
-      this.$export('user/excel', {
-        sortField: sortField,
-        sortOrder: sortOrder,
-        ...this.queryParams,
-        ...filteredInfo
-      })
-    },
-    search () {
-      let {sortedInfo, filteredInfo} = this
-      let sortField, sortOrder
-      // 获取当前列的排序和列的过滤规则
-      if (sortedInfo) {
-        sortField = sortedInfo.field
-        sortOrder = sortedInfo.order
-      }
-      this.fetch({
-        sortField: sortField,
-        sortOrder: sortOrder,
-        ...this.queryParams,
-        ...filteredInfo
       })
     },
     reset () {
@@ -344,47 +297,8 @@ export default {
       if (this.advanced) {
         this.$refs.createTime.reset()
       }
-      this.fetch()
+      this.fetchPage()
     },
-    handleTableChange (pagination, filters, sorter) {
-      // 将这三个参数赋值给Vue data，用于后续使用
-      this.paginationInfo = pagination
-      this.filteredInfo = filters
-      this.sortedInfo = sorter
-      this.userInfo.visiable = false
-      this.fetch({
-        sortField: sorter.field,
-        sortOrder: sorter.order,
-        ...this.queryParams,
-        ...filters
-      })
-    },
-    fetch (params = {}) {
-      // 显示loading
-      this.loading = true
-      if (this.paginationInfo) {
-        // 如果分页信息不为空，则设置表格当前第几页，每页条数，并设置查询分页参数
-        this.$refs.TableInfo.pagination.current = this.paginationInfo.current
-        this.$refs.TableInfo.pagination.pageSize = this.paginationInfo.pageSize
-        params.pageSize = this.paginationInfo.pageSize
-        params.pageNum = this.paginationInfo.current
-      } else {
-        // 如果分页信息为空，则设置为默认值
-        params.pageSize = this.pagination.defaultPageSize
-        params.pageNum = this.pagination.defaultCurrent
-      }
-      this.$get('user', {
-        ...params
-      }).then((r) => {
-        let data = r.data
-        const pagination = { ...this.pagination }
-        pagination.total = data.total
-        this.dataSource = data.rows
-        this.pagination = pagination
-        // 数据加载完毕，关闭loading
-        this.loading = false
-      })
-    }
   }
 }
 </script>

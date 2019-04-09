@@ -76,14 +76,20 @@ public class UserController extends BaseController<User,UserService> {
     // 重置密码，由管理员操作
     @ApiOperation("重置密码接口，只有管理员可以操作")
     @Secured(value = "admin")
-    @GetMapping("/adminresetpwd")
-    public APIResult resetPwdByAdmin(@Token String token, @RequestBody JSONObject params) throws Exception {
-        User user = getByParam(params);
+    @PostMapping("/adminresetpwd")
+    public APIResult resetPwdByAdmin(@Token String token, @RequestBody List<Long> ids) throws Exception {
+        if(ids == null || ids.size() == 0)return APIResult.fail("请求参数不正确！");
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("id", ids);
+        List<User> users = this.service.list(queryWrapper);
+        if(users == null || users.size() == 0)return APIResult.fail("请求参数不正确！");
         String pwd = RandomUtil.randomString(6);
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String pwdEncode = encoder.encode(pwd);
-        user.setPwd(pwdEncode);
-        this.service.updateById(user);
+        for(User user : users){
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            String pwdEncode = encoder.encode(pwd);
+            user.setPwd(pwdEncode);
+        }
+        this.service.updateBatchById(users, users.size());
         return APIResult.ok("success", pwd);
     }
 //

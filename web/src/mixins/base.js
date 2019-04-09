@@ -1,5 +1,6 @@
 /**
- * base相关接口的封装
+ * 界面相关接口封装，
+ * 具体界面直接通过mixin引用，获取相应的实现
  */
 import * as api from '@/api/base'
 
@@ -7,6 +8,7 @@ export default {
   data () {
     return {
       modelname: '',
+      // 查询条件
       queryParams: {},
       filteredInfo: null,
       sortedInfo: null,
@@ -34,6 +36,21 @@ export default {
     this.fetchPage()
   },
   methods: {
+    api,
+    // 表格翻页
+    handleTableChange (pagination, filters, sorter) {
+      // 将这三个参数赋值给Vue data，用于后续使用
+      this.paginationInfo = pagination
+      this.filteredInfo = filters
+      this.sortedInfo = sorter
+      this.userInfo.visiable = false
+      this.fetchPage({
+        sortField: sorter.field,
+        sortOrder: sorter.order,
+        ...this.queryParams,
+        ...filters
+      })
+    },
     // 查询分页数据
     fetchPage (params = {}) {
       // 显示loading
@@ -91,6 +108,9 @@ export default {
         ...this.queryParams,
         ...filteredInfo
       })
+    },
+    deleteAllById (ids) {
+      return api.delAllModel(this.modelname, ids)
     }
   }
 }

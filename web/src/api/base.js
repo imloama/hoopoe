@@ -1,5 +1,14 @@
 import { axios } from '@/utils/request'
 
+export const http = {
+  get: function (url) {
+    return axios({ method: 'get', url })
+  },
+  post: function (url, params) {
+    return axios({ method: 'post', url, data: params })
+  }
+}
+
 /**
  * 查询zfarm数据
  * @param {string} name url名称
