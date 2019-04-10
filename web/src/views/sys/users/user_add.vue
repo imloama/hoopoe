@@ -13,13 +13,10 @@
                    v-bind="formItemLayout"
                    :validateStatus="validateStatus"
                    :help="help">
-        <a-input v-model="user.username"
-                 v-decorator="['username',{rules: [{ required: true, message: '用户名不能为空'}]}]"/>
+        <a-input v-decorator="['name',{rules: [{ required: true, message: '用户名不能为空'}]}]"/>
       </a-form-item>
       <a-form-item label='密码' v-bind="formItemLayout">
-        <a-tooltip title='新用户默认密码为 123'>
-          <a-input type='password' readOnly :value="defaultPassword"/>
-        </a-tooltip>
+         <a-input type='password' readOnly v-decorator="['password',{rules: [{ required: true, message: '密码不能为空'}]}]"/>
       </a-form-item>
       <a-form-item label='邮箱' v-bind="formItemLayout">
         <a-input
@@ -31,7 +28,6 @@
       </a-form-item>
       <a-form-item label="手机" v-bind="formItemLayout">
         <a-input
-          v-model="user.mobile"
           v-decorator="['mobile', {rules: [
             { pattern: '^0?(13[0-9]|15[012356789]|17[013678]|18[0-9]|14[57])[0-9]{8}$', message: '请输入正确的手机号'}
           ]}]"/>
@@ -40,9 +36,8 @@
         <a-select
           mode="multiple"
           :allowClear="true"
-          v-model="user.roleId"
           style="width: 100%"
-          v-decorator="['role',{rules: [{ required: true, message: '请选择角色' }]}]">
+          v-decorator="['roles',{rules: [{ required: true, message: '请选择角色' }]}]">
           <a-select-option v-for="r in roleData" :key="r.id">{{r.name}}</a-select-option>
         </a-select>
       </a-form-item>
@@ -51,13 +46,11 @@
           :allowClear="true"
           :dropdownStyle="{ maxHeight: '220px', overflow: 'auto' }"
           :treeData="deptTreeData"
-          v-decorator="['deptId']"
-          v-model="user.deptId">
+          v-decorator="['deptId']">
         </a-tree-select>
       </a-form-item>
       <a-form-item label='状态' v-bind="formItemLayout">
         <a-radio-group
-          v-model="user.status"
           v-decorator="['status',{rules: [{ required: true, message: '请选择状态'}]}]">
           <a-radio value="0">有效</a-radio>
           <a-radio value="1">锁定</a-radio>
@@ -65,7 +58,6 @@
       </a-form-item>
       <a-form-item label='性别' v-bind="formItemLayout">
         <a-radio-group
-          v-model="user.sex"
           v-decorator="['sex',{rules: [{ required: true, message: '请选择性别' }]}]">
           <a-radio value="1">男</a-radio>
           <a-radio value="0">女</a-radio>
@@ -97,12 +89,8 @@ export default {
   },
   data () {
     return {
-      user: {
-        username: ''
-      },
       loading: false,
       formItemLayout,
-      defaultPassword: '123',
       form: this.$form.createForm(this),
       validateStatus: '',
       help: ''
@@ -110,7 +98,7 @@ export default {
   },
   computed:{
     ...mapState({
-      roleData: state => state.sys.rolePage,
+      roleData: state => state.sys.rolePage.records,
       deptTreeData: state => state.sys.deptTree
     })
   },
@@ -126,7 +114,6 @@ export default {
     reset () {
       this.validateStatus = ''
       this.help = ''
-      this.user.username = ''
       this.loading = false
       this.form.resetFields()
     },
@@ -138,11 +125,9 @@ export default {
       this.form.validateFields((err, values) => {
         if(err)return
         this.loading = true
-        const roles = this.user.roleId.map(id => {id})
-        createUser({
-          ...this.user,
-          roles
-        }).then((r) => {
+        const roles = values.roles.map(id => {id})
+        let user = Object.assign({ ...values }, {roles})
+        createUser(user).then((r) => {
           this.reset()
           this.$emit('success')
         }).catch(err => {

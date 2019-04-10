@@ -44,6 +44,11 @@ const user = {
           const result = response.data
           Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
           commit('SET_TOKEN', result.token)
+          commit('SET_ROLES', result.roles)
+          commit('SET_MENUS', result.menus)
+          commit('SET_INFO', result)
+          commit('SET_NAME', { name: result.name, welcome: welcome() })
+          commit('SET_AVATAR', result.avatar)
           resolve()
         }).catch(error => {
           reject(error)

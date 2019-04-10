@@ -10,7 +10,7 @@
     style="height: calc(100% - 55px);overflow: auto;padding-bottom: 53px;">
     <a-form :form="form">
       <a-form-item label='用户名' v-bind="formItemLayout">
-        <a-input readOnly v-decorator="['username']"/>
+        <a-input readOnly v-decorator="['name']"/>
       </a-form-item>
       <a-form-item label='邮箱' v-bind="formItemLayout">
         <a-input
@@ -34,10 +34,10 @@
           :allowClear="true"
           style="width: 100%"
           v-decorator="[
-            'roleId',
+            'roles',
             {rules: [{ required: true, message: '请选择角色' }]}
           ]">
-          <a-select-option v-for="r in roleData" :key="r.roleId.toString()">{{r.roleName}}</a-select-option>
+          <a-select-option v-for="r in roleData" :key="r.id">{{r.name}}</a-select-option>
         </a-select>
       </a-form-item>
       <a-form-item label='部门' v-bind="formItemLayout">
@@ -55,18 +55,18 @@
             'status',
             {rules: [{ required: true, message: '请选择状态' }]}
           ]">
-          <a-radio value="0">锁定</a-radio>
-          <a-radio value="1">有效</a-radio>
+          <a-radio value="1">锁定</a-radio>
+          <a-radio value="0">有效</a-radio>
         </a-radio-group>
       </a-form-item>
       <a-form-item label='性别' v-bind="formItemLayout">
         <a-radio-group
           v-decorator="[
-            'ssex',
+            'sex',
             {rules: [{ required: true, message: '请选择性别' }]}
           ]">
-          <a-radio value="0">男</a-radio>
-          <a-radio value="1">女</a-radio>
+          <a-radio value="1">男</a-radio>
+          <a-radio value="0">女</a-radio>
           <a-radio value="2">保密</a-radio>
         </a-radio-group>
       </a-form-item>
@@ -80,7 +80,9 @@
   </a-drawer>
 </template>
 <script>
-import {mapState, mapMutations} from 'vuex'
+import {mapState, mapActions, mapMutations} from 'vuex'
+import { updateUser } from '@/api/sys'
+
 const formItemLayout = {
   labelCol: { span: 3 },
   wrapperCol: { span: 18 }
@@ -105,21 +107,26 @@ export default {
   },
   computed: {
     ...mapState({
-      currentUser: state => state.account.user
+      currentUser: state => state.user.info
     })
   },
+  created(){
+    Promise.all([this.getRolePage(), this.getDeptTree()])
+      .then(r => {})
+      .catch(err=>{
+        this.$message.warning(err.message)
+      })
+  },
   methods: {
-    ...mapMutations({
-      setUser: 'account/setUser'
-    }),
+    ...mapActions(['getDeptTree','getRolePage']),
     onClose () {
       this.loading = false
       this.form.resetFields()
       this.$emit('close')
     },
     setFormValues ({...user}) {
-      this.userId = user.userId
-      let fields = ['username', 'email', 'status', 'ssex', 'mobile']
+      this.userId = user.id
+      let fields = ['name', 'email', 'status', 'sex', 'mobile']
       Object.keys(user).forEach((key) => {
         if (fields.indexOf(key) !== -1) {
           this.form.getFieldDecorator(key)
@@ -128,10 +135,10 @@ export default {
           this.form.setFieldsValue(obj)
         }
       })
-      if (user.roleId) {
-        this.form.getFieldDecorator('roleId')
-        let roleArr = user.roleId.split(',')
-        this.form.setFieldsValue({'roleId': roleArr})
+      if (user.roles) {
+        this.form.getFieldDecorator('roles')
+        let roleArr = user.roles.map(r => r.id)
+        this.form.setFieldsValue({'roles': roleArr})
       }
       if (user.deptId) {
         this.userDept = [user.deptId]
@@ -145,37 +152,18 @@ export default {
         if (!err) {
           this.loading = true
           let user = this.form.getFieldsValue()
-          user.roleId = user.roleId.join(',')
-          user.userId = this.userId
+          user.roles = user.roles.map(id => {id})
+          user.id = this.userId
           user.deptId = this.userDept
-          this.$put('user', {
-            ...user
-          }).then((r) => {
-            this.loading = false
-            this.$emit('success')
-            // 如果修改用户就是当前登录用户的话，更新其state
-            if (user.username === this.currentUser.username) {
-              this.$get(`user/${user.username}`).then((r) => {
-                this.setUser(r.data)
-              })
-            }
-          }).catch(() => {
-            this.loading = false
-          })
+          updateUser(this.userId, { ...user})
+            .then((r) => {
+              this.loading = false
+              this.$emit('success')
+            }).catch(() => {
+              this.loading = false
+            })
         }
       })
-    }
-  },
-  watch: {
-    userEditVisiable () {
-      if (this.userEditVisiable) {
-        this.$get('role').then((r) => {
-          this.roleData = r.data.rows
-        })
-        this.$get('dept').then((r) => {
-          this.deptTreeData = r.data.rows.children
-        })
-      }
     }
   }
 }

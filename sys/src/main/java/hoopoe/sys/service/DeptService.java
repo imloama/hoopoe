@@ -39,4 +39,10 @@ public class DeptService extends BaseServiceImpl<DeptMapper, Dept> {
         return this.baseMapper.deleteAll(ids) > 0;
     }
 
+    public List<Dept> listById(Set<Long> ids){
+        QueryWrapper<Dept> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("id", ids);
+        return this.list(queryWrapper);
+    }
+
 }

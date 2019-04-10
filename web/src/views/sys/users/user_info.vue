@@ -12,8 +12,13 @@
         <a-avatar shape="square" :size="115" icon="user" :src="`static/avatar/${userInfoData.avatar}`"/>
       </a-layout-sider>
       <a-layout-content class="user-content-one">
-        <p><a-icon type="user"/>账户：{{userInfoData.username}}</p>
-        <p :title="userInfoData.roleName"><a-icon type="star"/>角色：{{userInfoData.roleName? userInfoData.roleName: '暂无角色'}}</p>
+        <p><a-icon type="user"/>账户：{{userInfoData.name}}</p>
+        <p><a-icon type="star"/>角色：
+          <span v-if="userInfoData.roles.length > 0">
+            <span v-for="item in userInfoData.roles" :key="item.id">{{item.name}}</span>
+          </span>
+          <span v-else>没有角色</span>
+        </p>
         <p><a-icon type="skin"/>性别：{{sex}}</p>
         <p><a-icon type="phone"/>电话：{{userInfoData.mobile ? userInfoData.mobile : '暂未绑定电话'}}</p>
         <p><a-icon type="mail"/>邮箱：{{userInfoData.email ? userInfoData.email : '暂未绑定邮箱'}}</p>
@@ -21,21 +26,19 @@
       <a-layout-content class="user-content-two">
         <p><a-icon type="home"/>部门：{{userInfoData.deptName ? userInfoData.deptName : '暂无部门信息'}}</p>
         <p>
-          <a-icon type="smile" v-if="userInfoData.status === '1'"/>
+          <a-icon type="smile" v-if="userInfoData.status === '0'"/>
           <a-icon type="frown" v-else/>状态：
-          <template v-if="userInfoData.status === '0'">
+          <template v-if="userInfoData.status === '1'">
             <a-tag color="red">锁定</a-tag>
           </template>
-          <template v-else-if="userInfoData.status === '1'">
+          <template v-else-if="userInfoData.status === '0'">
             <a-tag color="cyan">有效</a-tag>
           </template>
           <template v-else>
             {{userInfoData.status}}
           </template>
         </p>
-        <p><a-icon type="clock-circle"/>创建时间：{{userInfoData.createTime}}</p>
-        <p><a-icon type="login" />最近登录：{{userInfoData.lastLoginTime}}</p>
-        <p :title="userInfoData.description"><a-icon type="message"/>描述：{{userInfoData.description}}</p>
+        <p :title="userInfoData.memo"><a-icon type="message"/>备注：{{userInfoData.memo}}</p>
       </a-layout-content>
     </a-layout>
   </a-modal>

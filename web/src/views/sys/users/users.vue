@@ -38,10 +38,10 @@
       <div class="operator">
         <a-button type="primary" ghost @click="add" v-action="'user:add'">新增</a-button>
         <a-button @click="batchDelete" v-action="'user:delete'">删除</a-button>
-        <a-dropdown v-action="'user:reset','user:export'">
+        <a-dropdown v-hasAnyPermission="'user:reset','user:export'">
           <a-menu slot="overlay">
             <a-menu-item v-action="'user:reset'" key="password-reset" @click="resetPassword">密码重置</a-menu-item>
-            <a-menu-itemv-action="'user:export'" key="export-data" @click="exportExcel">导出Excel</a-menu-item>
+            <a-menu-item v-action="'user:export'" key="export-data" @click="exportExcel">导出Excel</a-menu-item>
           </a-menu>
         </a-dropdown>
       </div>
@@ -69,6 +69,26 @@
         </template>
       </a-table>
     </div>
+      <!-- 用户信息查看 -->
+    <user-info
+      :userInfoData="userInfo.data"
+      :userInfoVisiable="userInfo.visiable"
+      @close="handleUserInfoClose">
+    </user-info>
+    <!-- 新增用户 -->
+    <user-add
+      @close="handleUserAddClose"
+      @success="handleUserAddSuccess"
+      :userAddVisiable="userAdd.visiable">
+    </user-add>
+    <!-- 修改用户 -->
+    <user-edit
+      ref="userEdit"
+      @close="handleUserEditClose"
+      @success="handleUserEditSuccess"
+      :userEditVisiable="userEdit.visiable">
+    </user-edit>
+
   </a-card>
 </template>
 
@@ -79,6 +99,8 @@ import DeptInputTree from '@/components/sys/dept_input_tree'
 import UserAdd from './UserAdd'
 import UserEdit from './UserEdit'
 import basemixin from '@/mixins/base'
+import { mapState, mapActions } from 'vuex'
+import { getModel } from '@/api/base'
 
 export default {
   name: 'Users',
@@ -181,12 +203,23 @@ export default {
   mounted () {
   },
   methods: {
+    ...mapActions(['getRolePage']),
     onSelectChange (selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys
     },
+    getUser(id){
+      return getModel(this.modelname, id)
+    },
     view (record) {
-      this.userInfo.data = record
-      this.userInfo.visiable = true
+      // 根据id查询用户详情
+      this.getUser(record.id).then( user => {
+        this.userInfo.data = user
+        this.userInfo.visiable = true
+      }).catch(err => {
+        console.error(err)
+        this.$message.error('查询用户失败')
+      })
+      
     },
     add () {
       this.userAdd.visiable = true
@@ -196,12 +229,19 @@ export default {
     },
     handleUserAddSuccess () {
       this.userAdd.visiable = false
-      this.$message.success('新增用户成功，初始密码为1234qwer')
+      this.$message.success('新增用户成功')
       this.search()
     },
     edit (record) {
-      this.$refs.userEdit.setFormValues(record)
-      this.userEdit.visiable = true
+      // 根据id查询用户详情
+      this.getUser(record.id).then( user => {
+        this.$refs.userEdit.setFormValues(user)
+        this.userEdit.visiable = true
+      }).catch(err => {
+        console.error(err)
+        this.$message.error('查询用户失败')
+      })
+      
     },
     handleUserEditClose () {
       this.userEdit.visiable = false
