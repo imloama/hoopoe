@@ -1,14 +1,10 @@
 package hoopoe.sys.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.github.imloama.mybatisplus.bootext.base.BaseServiceImpl;
-import hoopoe.core.vm.RequestParam;
+import hoopoe.core.base.BaseServiceImpl;
 import hoopoe.sys.mapper.DeptMapper;
-import hoopoe.sys.mapper.UserMapper;
 import hoopoe.sys.model.Dept;
-import hoopoe.sys.model.User;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,17 +17,17 @@ import java.util.Set;
 public class DeptService extends BaseServiceImpl<DeptMapper, Dept> {
 
     @Transactional
-    public void create(Dept dept) {
+    public boolean create(Dept dept) {
         Long parentId = dept.getParentId();
         if (parentId == null)
             dept.setParentId(0L);
         dept.setCreateTime(new Date());
-        this.save(dept);
+        return this.save(dept);
     }
     @Transactional
-    public void update(Dept dept) {
+    public boolean update(Dept dept) {
         dept.setModifyTime(new Date());
-        this.baseMapper.updateById(dept);
+        return this.baseMapper.updateById(dept) > 0;
     }
 
     @Transactional

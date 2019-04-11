@@ -65,14 +65,14 @@ export default {
     },
     sex () {
       switch (this.userInfoData.sex) {
-        case '0':
-          return '男'
         case '1':
+          return '男'
+        case '0':
           return '女'
         case '2':
           return '保密'
         default:
-          return this.userInfoData.sex
+          return '未知'
       }
     }
   },

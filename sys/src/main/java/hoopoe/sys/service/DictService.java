@@ -1,6 +1,6 @@
 package hoopoe.sys.service;
 
-import com.github.imloama.mybatisplus.bootext.base.BaseServiceImpl;
+import hoopoe.core.base.BaseServiceImpl;
 import hoopoe.sys.mapper.DeptMapper;
 import hoopoe.sys.mapper.DictMapper;
 import hoopoe.sys.model.Dept;

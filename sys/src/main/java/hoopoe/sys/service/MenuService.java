@@ -1,12 +1,9 @@
 package hoopoe.sys.service;
 
-import com.github.imloama.mybatisplus.bootext.base.BaseServiceImpl;
-import hoopoe.sys.mapper.DictMapper;
+import hoopoe.core.base.BaseServiceImpl;
 import hoopoe.sys.mapper.MenuMapper;
-import hoopoe.sys.model.Dict;
 import hoopoe.sys.model.Menu;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

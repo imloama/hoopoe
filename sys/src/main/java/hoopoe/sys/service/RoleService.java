@@ -1,6 +1,6 @@
 package hoopoe.sys.service;
 
-import com.github.imloama.mybatisplus.bootext.base.BaseServiceImpl;
+import hoopoe.core.base.BaseServiceImpl;
 import hoopoe.sys.mapper.MenuMapper;
 import hoopoe.sys.mapper.RoleMapper;
 import hoopoe.sys.model.Menu;
