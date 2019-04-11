@@ -15,7 +15,7 @@ const state = {
 const actions = {
   async getDeptTree ({ commit, state }) {
     const data = await sysapi.getDepts()
-    commit(GET_DEPT_TREE, data.data)
+    commit(GET_DEPT_TREE, data)
   },
   async getRolePage ({ commit, state }, params) {
     const page = await sysapi.getRoles(params)

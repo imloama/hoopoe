@@ -43,7 +43,11 @@ service.interceptors.request.use(config => {
 
 // response interceptor
 service.interceptors.response.use((response) => {
-  return response.data
+  const result = response.data
+  if (result.code !== 200) {
+    notification.error({ message: '错误', description: result.message })
+  }
+  return result.data
 }, err)
 
 const installer = {

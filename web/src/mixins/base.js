@@ -36,7 +36,8 @@ export default {
     this.fetchPage()
   },
   methods: {
-    api,
+    $get: api.http.get,
+    $post: api.http.post,
     // 表格翻页
     handleTableChange (pagination, filters, sorter) {
       // 将这三个参数赋值给Vue data，用于后续使用
@@ -68,8 +69,7 @@ export default {
       }
       return api.getModelPage(this.modelname, {
         ...params
-      }).then((r) => {
-        const data = r.data
+      }).then(data => {
         const pagination = { ...this.pagination }
         pagination.total = data.total
         this.dataSource = data.records

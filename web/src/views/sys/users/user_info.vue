@@ -14,7 +14,7 @@
       <a-layout-content class="user-content-one">
         <p><a-icon type="user"/>账户：{{userInfoData.name}}</p>
         <p><a-icon type="star"/>角色：
-          <span v-if="userInfoData.roles.length > 0">
+          <span v-if="userInfoData.roles && userInfoData.roles.length > 0">
             <span v-for="item in userInfoData.roles" :key="item.id">{{item.name}}</span>
           </span>
           <span v-else>没有角色</span>
@@ -26,12 +26,12 @@
       <a-layout-content class="user-content-two">
         <p><a-icon type="home"/>部门：{{userInfoData.deptName ? userInfoData.deptName : '暂无部门信息'}}</p>
         <p>
-          <a-icon type="smile" v-if="userInfoData.status === '0'"/>
+          <a-icon type="smile" v-if="userInfoData.status === 0"/>
           <a-icon type="frown" v-else/>状态：
-          <template v-if="userInfoData.status === '1'">
+          <template v-if="userInfoData.status === 1">
             <a-tag color="red">锁定</a-tag>
           </template>
-          <template v-else-if="userInfoData.status === '0'">
+          <template v-else-if="userInfoData.status === 0">
             <a-tag color="cyan">有效</a-tag>
           </template>
           <template v-else>

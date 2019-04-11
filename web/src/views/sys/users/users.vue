@@ -3,11 +3,11 @@
  */
 <template>
   <a-card :bordered="false" class="card-area">
-    <div :class="advanced ? 'search' : null">
+    <div>
       <!-- 搜索区域 -->
       <a-form layout="horizontal">
         <a-row >
-        <div :class="advanced ? null: 'fold'">
+        <div class="fold">
             <a-col :md="12" :sm="24" >
               <a-form-item
                 label="用户名"
@@ -71,12 +71,14 @@
     </div>
       <!-- 用户信息查看 -->
     <user-info
+      v-if="userInfo.visiable"
       :userInfoData="userInfo.data"
       :userInfoVisiable="userInfo.visiable"
       @close="handleUserInfoClose">
     </user-info>
     <!-- 新增用户 -->
     <user-add
+      v-if="userAdd.visiable"
       @close="handleUserAddClose"
       @success="handleUserAddSuccess"
       :userAddVisiable="userAdd.visiable">
@@ -84,6 +86,7 @@
     <!-- 修改用户 -->
     <user-edit
       ref="userEdit"
+      v-if="userEdit.visiable"
       @close="handleUserEditClose"
       @success="handleUserEditSuccess"
       :userEditVisiable="userEdit.visiable">
@@ -96,8 +99,8 @@
 <script>
 import UserInfo from './user_info'
 import DeptInputTree from '@/components/sys/dept_input_tree'
-import UserAdd from './UserAdd'
-import UserEdit from './UserEdit'
+import UserAdd from './user_add'
+import UserEdit from './user_edit'
 import basemixin from '@/mixins/base'
 import { mapState, mapActions } from 'vuex'
 import { getModel } from '@/api/base'
@@ -235,8 +238,10 @@ export default {
     edit (record) {
       // 根据id查询用户详情
       this.getUser(record.id).then( user => {
-        this.$refs.userEdit.setFormValues(user)
         this.userEdit.visiable = true
+        this.$nextTick(()=>{
+          this.$refs.userEdit.setFormValues(user)
+        })
       }).catch(err => {
         console.error(err)
         this.$message.error('查询用户失败')
@@ -305,7 +310,7 @@ export default {
             ids.push(that.dataSource[key].id)
           }
 
-          this.api.post(`/${this.modelname}/adminresetpwd`, { ids })
+          this.$post(`/${this.modelname}/adminresetpwd`, { ids })
             .then(result => {
             that.$message.success('重置用户密码成功，重置后的密码为:' + result.data)
             that.selectedRowKeys = []
@@ -333,10 +338,6 @@ export default {
       this.queryParams = {}
       // 清空部门树选择
       this.$refs.deptTree.reset()
-      // 清空时间选择
-      if (this.advanced) {
-        this.$refs.createTime.reset()
-      }
       this.fetchPage()
     },
   }

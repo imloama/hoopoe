@@ -20,7 +20,6 @@
       </a-form-item>
       <a-form-item label='邮箱' v-bind="formItemLayout">
         <a-input
-          v-model="user.email"
           v-decorator="['email',{rules: [
             { type: 'email', message: '请输入正确的邮箱' },
             { max: 50, message: '长度不能超过50个字符'}

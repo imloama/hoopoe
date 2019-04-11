@@ -55,8 +55,8 @@
             'status',
             {rules: [{ required: true, message: '请选择状态' }]}
           ]">
-          <a-radio value="1">锁定</a-radio>
-          <a-radio value="0">有效</a-radio>
+          <a-radio value=1>锁定</a-radio>
+          <a-radio value=0>有效</a-radio>
         </a-radio-group>
       </a-form-item>
       <a-form-item label='性别' v-bind="formItemLayout">
@@ -65,9 +65,9 @@
             'sex',
             {rules: [{ required: true, message: '请选择性别' }]}
           ]">
-          <a-radio value="1">男</a-radio>
-          <a-radio value="0">女</a-radio>
-          <a-radio value="2">保密</a-radio>
+          <a-radio value=1>男</a-radio>
+          <a-radio value=0>女</a-radio>
+          <a-radio value=2>保密</a-radio>
         </a-radio-group>
       </a-form-item>
     </a-form>
