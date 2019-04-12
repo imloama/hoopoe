@@ -175,6 +175,12 @@ public class UserService extends BaseServiceImpl<UserMapper, User> implements Us
         user.setToken(token);
         user.setPwd(null);
         user.setIdCard(null);
+        //查询用户的角色，
+        List<Role> roles = this.roleService.findByUser(user.getId());
+        user.setRoles(roles);
+        //查询用户的菜单
+        List<Menu> menus = this.menuService.findByUser(user.getId());
+        user.setMenus(menus);
         return user;
     }
 
