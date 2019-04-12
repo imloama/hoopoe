@@ -66,8 +66,9 @@
 
 <script>
 import md5 from 'md5'
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
+
 
 export default {
   components: {
@@ -88,10 +89,16 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapState({
+      roles: state => state.user.roles,
+      menus: state => state.user.menus,
+    })
+  },
   created () {
   },
   methods: {
-    ...mapActions(['Login', 'Logout']),
+    ...mapActions(['Login', 'Logout', 'GenerateRoutes']),
     // handler
     handleUsernameOrEmail (rule, value, callback) {
       const { state } = this
@@ -128,6 +135,7 @@ export default {
           loginParams[!state.loginType ? 'email' : 'username'] = values.username
           loginParams.password = md5(values.password)
           Login(loginParams)
+            //.then(() => this.GenerateRoutes({roles: this.roles, menus: this.menus}))
             .then((res) => this.loginSuccess(res))
             .catch(err => this.requestFailed(err))
             .finally(() => {
@@ -142,7 +150,11 @@ export default {
     },
     loginSuccess (res) {
       console.log(res)
-      this.$router.push('/')
+      console.log(this.$route)
+      console.log(this.$router)
+      this.$nextTick(()=>{
+        this.$router.push({ name: 'workplace'})
+      })
       // 延迟 1 秒显示欢迎信息
       setTimeout(() => {
         this.$notification.success({

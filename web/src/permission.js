@@ -20,34 +20,16 @@ router.beforeEach((to, from, next) => {
       next({ path: '/workplace' })
       NProgress.done()
     } else {
-      if (store.getters.roles === null || store.getters.roles.length === 0) {
-        store
-          .dispatch('GetInfo')
+      const { oroles, addRouters } = store.getters
+      if (oroles === null || oroles.length === 0) {
+        store.dispatch('GetInfo')
           .then(({ roles, menus }) => {
-            store.dispatch('GenerateRoutes', { roles, menus }).then(() => {
-              // 根据roles权限生成可访问的路由表
-              // 动态添加可访问路由表
-              router.addRoutes(store.getters.addRouters)
-              const redirect = decodeURIComponent(from.query.redirect || to.path)
-              if (to.path === redirect) {
-                // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
-                next({ ...to, replace: true })
-              } else {
-                // 跳转到目的路由
-                next({ path: redirect })
-              }
-            })
+            resetRouter({ roles, menus })
           })
-          .catch(err => {
-            console.error(err)
-            notification.error({
-              message: '错误',
-              description: '请求用户信息失败，请重试'
-            })
-            store.dispatch('Logout').then(() => {
-              next({ path: '/user/login', query: { redirect: to.fullPath } })
-            })
-          })
+          .catch(err => { console.error(err) })
+      } else if (addRouters === null || addRouters.length === 0) {
+        const { roles, menus } = store.state.user
+        resetRouter({ roles, menus })
       } else {
         next()
       }
@@ -62,6 +44,26 @@ router.beforeEach((to, from, next) => {
     }
   }
 })
+
+function resetRouter({ roles, menus }) {
+  store.dispatch('GenerateRoutes', { roles, menus }).then(() => {
+    // 根据roles权限生成可访问的路由表
+    // 动态添加可访问路由表
+    router.addRoutes(store.getters.addRouters)
+    console.log(router)
+    const redirect = decodeURIComponent(from.query.redirect || to.path)
+    console.log(redirect)
+    if (to.path === redirect) {
+      // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
+      next({ ...to, replace: true })
+    } else {
+      // 跳转到目的路由
+      next({ path: redirect })
+    }
+  }).catch(err => {
+    console.error(err)
+  })
+}
 
 router.afterEach(() => {
   NProgress.done() // finish progress bar
