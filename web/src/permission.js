@@ -20,17 +20,28 @@ router.beforeEach((to, from, next) => {
       next({ path: '/workplace' })
       NProgress.done()
     } else {
-      const { oroles, addRouters } = store.getters
-      if (oroles === null || oroles.length === 0) {
+      // 如果 userinfo存在，则表示已经登陆了，否则需要获取用户信息
+      const user = store.getters.userInfo
+      console.log(user)
+      console.log(Vue.ls.get(ACCESS_TOKEN))
+      if (!user.token) {
         store.dispatch('GetInfo')
           .then(({ roles, menus }) => {
-            resetRouter({ roles, menus })
+            resetRouter({ roles, menus }, { to, from, next })
           })
-          .catch(err => { console.error(err) })
-      } else if (addRouters === null || addRouters.length === 0) {
-        const { roles, menus } = store.state.user
-        resetRouter({ roles, menus })
+          .catch(err => {
+            console.error(err)
+            notification.error({
+              message: '错误',
+              description: '请求用户信息失败，请重试'
+            })
+            store.dispatch('Logout').then(() => {
+              next({ path: '/user/login', query: { redirect: to.fullPath } })
+            })
+            // next({ path: '/user/login', query: { redirect: to.fullPath } })
+          })
       } else {
+        console.log('------------to next()------')
         next()
       }
     }
@@ -45,14 +56,12 @@ router.beforeEach((to, from, next) => {
   }
 })
 
-function resetRouter({ roles, menus }) {
+function resetRouter ({ roles, menus }, { to, from, next }) {
   store.dispatch('GenerateRoutes', { roles, menus }).then(() => {
     // 根据roles权限生成可访问的路由表
     // 动态添加可访问路由表
     router.addRoutes(store.getters.addRouters)
-    console.log(router)
     const redirect = decodeURIComponent(from.query.redirect || to.path)
-    console.log(redirect)
     if (to.path === redirect) {
       // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
       next({ ...to, replace: true })

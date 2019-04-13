@@ -9,8 +9,8 @@ const user = {
     name: '',
     welcome: '',
     avatar: '',
-    roles: [],
-    menus: [],
+    roles: undefined,
+    menus: undefined,
     info: {}
   },
 
@@ -27,6 +27,10 @@ const user = {
     },
     SET_ROLES: (state, roles) => {
       state.roles = roles
+      console.log('------after set roles-----')
+      console.log(roles)
+      console.log(state.roles)
+      console.log(state)
     },
     SET_MENUS: (state, menus) => {
       state.menus = menus
@@ -38,27 +42,23 @@ const user = {
 
   actions: {
     // 登录
-    Login ({ commit }, userInfo) {
-      return new Promise((resolve, reject) => {
-        login(userInfo).then(result => {
-          Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
-          commit('SET_TOKEN', result.token)
-          commit('SET_ROLES', result.roles)
-          commit('SET_MENUS', result.menus)
-          commit('SET_INFO', result)
-          commit('SET_NAME', { name: result.name, welcome: welcome() })
-          commit('SET_AVATAR', result.avatar)
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
-      })
+    async Login ({ commit }, userInfo) {
+      const user = await login(userInfo)
+      Vue.ls.set(ACCESS_TOKEN, user.token, 7 * 24 * 60 * 60 * 1000)
+      commit('SET_TOKEN', user.token)
+      commit('SET_ROLES', user.roles)
+      commit('SET_MENUS', user.menus)
+      commit('SET_INFO', user)
+      commit('SET_NAME', { name: user.name, welcome: welcome() })
+      commit('SET_AVATAR', user.avatar)
     },
 
     // 获取用户信息
     GetInfo ({ commit }) {
       return new Promise((resolve, reject) => {
         getInfo().then(result => {
+          console.log('user info--')
+          console.log(result)
           if (result.roles && result.menus && result.roles.length > 0 && result.menus.length > 0) {
             commit('SET_ROLES', result.roles)
             commit('SET_MENUS', result.menus)
