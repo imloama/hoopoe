@@ -24,7 +24,7 @@ router.beforeEach((to, from, next) => {
       const user = store.getters.userInfo
       console.log(user)
       console.log(Vue.ls.get(ACCESS_TOKEN))
-      if (!user.token) {
+      if (user.token === null || typeof user.token === 'undefined') {
         store.dispatch('GetInfo')
           .then(({ roles, menus }) => {
             resetRouter({ roles, menus }, { to, from, next })
@@ -41,7 +41,6 @@ router.beforeEach((to, from, next) => {
             // next({ path: '/user/login', query: { redirect: to.fullPath } })
           })
       } else {
-        console.log('------------to next()------')
         next()
       }
     }
@@ -89,7 +88,7 @@ router.afterEach(() => {
 const action = Vue.directive('action', {
   bind: function (el, binding, vnode) {
     const action = binding.value
-    const menus = store.getters.menus
+    const menus = store.getters.userInfo.menus
     const codes = menus.map(p => p.code)
     if (codes.indexOf(action) < 0) {
       el.parentNode && el.parentNode.removeChild(el) || (el.style.display = 'none')
@@ -100,7 +99,7 @@ const action = Vue.directive('action', {
 // 只要包含列出的任意一个权限，元素就会显示
 const hasAnyPermission = Vue.directive('hasAnyPermission', {
   bind (el, binding, vnode) {
-    const menus = (store.getters.menus || []).map(m => m.code)
+    const menus = (store.getters.userInfo.menus || []).map(m => m.code)
     const values = binding.value.split(',')
     let flag = false
     for (const v of values) {
