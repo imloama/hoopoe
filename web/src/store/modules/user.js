@@ -52,7 +52,8 @@ const user = {
       return new Promise((resolve, reject) => {
         getInfo().then(result => {
           if (result.roles && result.menus && result.roles.length > 0 && result.menus.length > 0) {
-            commit('SET_INFO', result)
+            const user = { ...result, token: Vue.ls.get(ACCESS_TOKEN) }
+            commit('SET_INFO', user)
           } else {
             reject(new Error('getInfo: roles must be a non-null array !'))
           }

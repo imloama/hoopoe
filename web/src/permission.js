@@ -22,8 +22,6 @@ router.beforeEach((to, from, next) => {
     } else {
       // 如果 userinfo存在，则表示已经登陆了，否则需要获取用户信息
       const user = store.getters.userInfo
-      console.log(user)
-      console.log(Vue.ls.get(ACCESS_TOKEN))
       if (user.token === null || typeof user.token === 'undefined') {
         store.dispatch('GetInfo')
           .then(({ roles, menus }) => {
@@ -61,6 +59,7 @@ function resetRouter ({ roles, menus }, { to, from, next }) {
     // 动态添加可访问路由表
     router.addRoutes(store.getters.addRouters)
     const redirect = decodeURIComponent(from.query.redirect || to.path)
+    console.log(redirect)
     if (to.path === redirect) {
       // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
       next({ ...to, replace: true })

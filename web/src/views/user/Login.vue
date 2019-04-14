@@ -91,8 +91,8 @@ export default {
   },
   computed: {
     ...mapState({
-      roles: state => state.user.roles,
-      menus: state => state.user.menus,
+      roles: state => state.user.info.roles,
+      menus: state => state.user.info.menus,
     })
   },
   created () {
@@ -135,7 +135,10 @@ export default {
           loginParams[!state.loginType ? 'email' : 'username'] = values.username
           loginParams.password = md5(values.password)
           Login(loginParams)
-            //.then(() => this.GenerateRoutes({roles: this.roles, menus: this.menus}))
+            .then(() => this.GenerateRoutes({roles: this.roles, menus: this.menus}))
+            .then(newrouters=> {
+              return this.$router.addRoutes(newrouters)
+            })
             .then((res) => this.loginSuccess(res))
             .catch(err => this.requestFailed(err))
             .finally(() => {
