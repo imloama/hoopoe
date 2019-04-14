@@ -70,12 +70,12 @@
       </a-table>
     </div>
       <!-- 用户信息查看 -->
-    <user-info
-      v-if="userInfo.visiable"
-      :userInfoData="userInfo.data"
-      :userInfoVisiable="userInfo.visiable"
-      @close="handleUserInfoClose">
-    </user-info>
+      <user-info
+        ref="userInfo"
+        :userInfoData="userInfo.data"
+        @close="handleUserInfoClose">
+      </user-info>
+      
     <!-- 新增用户 -->
     <user-add
       v-if="userAdd.visiable"
@@ -91,6 +91,9 @@
       @success="handleUserEditSuccess"
       :userEditVisiable="userEdit.visiable">
     </user-edit>
+
+     
+
 
   </a-card>
 </template>
@@ -112,7 +115,7 @@ export default {
   data () {
     return {
       userInfo: {
-        visiable: false,
+        visiable: true,
         data: {}
       },
       userAdd: {
@@ -217,7 +220,8 @@ export default {
       // 根据id查询用户详情
       this.getUser(record.id).then( user => {
         this.userInfo.data = user
-        this.userInfo.visiable = true
+        //this.userInfo.visiable = true
+        this.$refs.userInfo.show()
       }).catch(err => {
         console.error(err)
         this.$message.error('查询用户失败')

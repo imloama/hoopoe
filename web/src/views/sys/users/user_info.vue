@@ -1,11 +1,11 @@
 <template>
   <a-modal
-    v-model="show"
+    v-model="visiable"
     :centered="true"
     :keyboard="false"
     :footer="null"
     :width="750"
-    @cancel="handleCancleClick"
+    @ok="handleCancleClick"
     title="用户信息">
     <a-layout class="user-info">
       <a-layout-sider class="user-info-side">
@@ -46,23 +46,17 @@
 <script>
 export default {
   name: 'UserInfo',
+  data(){
+    return {
+      visiable: false
+    }
+  },
   props: {
-    userInfoVisiable: {
-      require: true,
-      default: false
-    },
     userInfoData: {
       require: true
     }
   },
   computed: {
-    show: {
-      get: function () {
-        return this.userInfoVisiable
-      },
-      set: function () {
-      }
-    },
     sex () {
       switch (this.userInfoData.sex) {
         case '1':
@@ -76,7 +70,12 @@ export default {
       }
     }
   },
+  created(){
+  },
   methods: {
+    show(){
+      this.visiable = true
+    },
     handleCancleClick () {
       this.$emit('close')
     }

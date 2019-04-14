@@ -16,7 +16,7 @@
         <a-input v-decorator="['name',{rules: [{ required: true, message: '用户名不能为空'}]}]"/>
       </a-form-item>
       <a-form-item label='密码' v-bind="formItemLayout">
-         <a-input type='password' readOnly v-decorator="['password',{rules: [{ required: true, message: '密码不能为空'}]}]"/>
+         <a-input type='password' v-decorator="['password',{rules: [{ required: true, message: '密码不能为空'}]}]"/>
       </a-form-item>
       <a-form-item label='邮箱' v-bind="formItemLayout">
         <a-input
@@ -75,6 +75,7 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import { createUser } from '@/api/sys'
+import md5 from 'md5'
 const formItemLayout = {
   labelCol: { span: 3 },
   wrapperCol: { span: 18 }
@@ -97,7 +98,7 @@ export default {
   },
   computed:{
     ...mapState({
-      roleData: state => state.sys.rolePage.records,
+      roleData: state => state.sys.rolePage ? state.sys.rolePage.records : [],
       deptTreeData: state => state.sys.deptTree
     })
   },
@@ -125,7 +126,8 @@ export default {
         if(err)return
         this.loading = true
         const roles = values.roles.map(id => {id})
-        let user = Object.assign({ ...values }, {roles})
+        const password =  md5(values.password)
+        let user = Object.assign({ ...values }, {roles, password})
         createUser(user).then((r) => {
           this.reset()
           this.$emit('success')
