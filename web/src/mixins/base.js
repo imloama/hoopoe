@@ -77,8 +77,21 @@ export default {
         // 数据加载完毕，关闭loading
         this.loading = false
         return data
+      }).catch(err => {
+        this.$message.error(err.message)
+        this.loading = false
       })
     }, // end of fetchPage
+    getQueryItems () {
+      const result = []
+      console.log(this.queryParams)
+      for (const key in this.queryParams) {
+        const item = { col: key, type: 'like', value: this.queryParams[key] }
+        result.push(item)
+      }
+      console.log(result)
+      return result
+    },
     search () {
       const { sortedInfo, filteredInfo } = this
       let sortField, sortOrder
@@ -87,10 +100,10 @@ export default {
         sortField = sortedInfo.field
         sortOrder = sortedInfo.order
       }
-      this.fetchPage(this.modelname, {
+      this.fetchPage({
         orderby: sortField,
         asc: sortOrder,
-        ...this.queryParams,
+        query: this.getQueryItems(),
         ...filteredInfo
       })
     },
@@ -105,7 +118,7 @@ export default {
       api.downExcel(this.modelname, {
         orderby: sortField,
         asc: sortOrder,
-        ...this.queryParams,
+        query: this.getQueryItems(),
         ...filteredInfo
       })
     },

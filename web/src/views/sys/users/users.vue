@@ -13,7 +13,7 @@
                 label="用户名"
                 :labelCol="{span: 4}"
                 :wrapperCol="{span: 18, offset: 2}">
-                <a-input v-model="queryParams.username"/>
+                <a-input v-model="queryParams.name"/>
               </a-form-item>
             </a-col>
             <a-col :md="12" :sm="24" >
@@ -47,6 +47,7 @@
       </div>
       <!-- 表格区域 -->
       <a-table ref="TableInfo"
+              rowKey="id"
                :columns="columns"
                :dataSource="dataSource"
                :pagination="pagination"
@@ -142,20 +143,20 @@ export default {
         dataIndex: 'sex',
         customRender: (text, row, index) => {
           switch (text) {
-            case '1':
+            case 1:
               return '男'
-            case '0':
+            case 0:
               return '女'
-            case '2':
+            case 2:
               return '保密'
             default:
               return text
           }
         },
         filters: [
-          { text: '男', value: '1' },
-          { text: '女', value: '0' },
-          { text: '保密', value: '2' }
+          { text: '男', value: 1 },
+          { text: '女', value: 0 },
+          { text: '保密', value: 2 }
         ],
         filterMultiple: false,
         filteredValue: filteredInfo.sex || null,
@@ -176,26 +177,21 @@ export default {
         dataIndex: 'status',
         customRender: (text, row, index) => {
           switch (text) {
-            case '1':
+            case 1:
               return <a-tag color="red">锁定</a-tag>
-            case '0':
+            case 0:
               return <a-tag color="cyan">有效</a-tag>
             default:
               return text
           }
         },
         filters: [
-          { text: '有效', value: '0' },
-          { text: '锁定', value: '1' }
+          { text: '有效', value: 0 },
+          { text: '锁定', value: 1 }
         ],
         filterMultiple: false,
         filteredValue: filteredInfo.status || null,
         onFilter: (value, record) => record.status.includes(value)
-      }, {
-        title: '创建时间',
-        dataIndex: 'createTime',
-        sorter: true,
-        sortOrder: sortedInfo.columnKey === 'createTime' && sortedInfo.order
       }, {
         title: '操作',
         dataIndex: 'operation',

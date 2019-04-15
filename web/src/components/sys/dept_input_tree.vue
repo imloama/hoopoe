@@ -2,7 +2,7 @@
   <a-tree-select
     :allowClear="true"
     :dropdownStyle="{ maxHeight: '220px', overflow: 'auto' }"
-    :treeData="deptTreeData"
+    :treeData="deptTree"
     v-model="value">
   </a-tree-select>
 </template>
@@ -19,13 +19,7 @@ export default {
   computed:{
     ...mapState({
       deptTree: state => state.sys.deptTree
-    }),
-    deptTreeData(){
-      if(this.deptTree){
-        return this.deptTree.children
-      }
-      return []
-    }
+    })
   },
   methods: {
     ...mapActions(['getDeptTree']),

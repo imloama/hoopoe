@@ -33,11 +33,12 @@
           mode="multiple"
           :allowClear="true"
           style="width: 100%"
+          @change="onRolesChange"
           v-decorator="[
             'roles',
             {rules: [{ required: true, message: '请选择角色' }]}
           ]">
-          <a-select-option v-for="r in roleData" :key="r.id">{{r.name}}</a-select-option>
+          <a-select-option v-for="r in roleData" :value="r.id" :key="r.id">{{r.remark}}</a-select-option>
         </a-select>
       </a-form-item>
       <a-form-item label='部门' v-bind="formItemLayout">
@@ -50,25 +51,29 @@
         </a-tree-select>
       </a-form-item>
       <a-form-item label='状态' v-bind="formItemLayout">
-        <a-radio-group
+         <a-select
+          :allowClear="true"
+          style="width: 100%"
           v-decorator="[
             'status',
             {rules: [{ required: true, message: '请选择状态' }]}
           ]">
-          <a-radio value=1>锁定</a-radio>
-          <a-radio value=0>有效</a-radio>
-        </a-radio-group>
+          <a-select-option value=0 >有效</a-select-option>
+          <a-select-option value=1 >锁定</a-select-option>
+        </a-select>
       </a-form-item>
       <a-form-item label='性别' v-bind="formItemLayout">
-        <a-radio-group
+        <a-select
+          :allowClear="true"
+          style="width: 100%"
           v-decorator="[
             'sex',
             {rules: [{ required: true, message: '请选择性别' }]}
           ]">
-          <a-radio value=1>男</a-radio>
-          <a-radio value=0>女</a-radio>
-          <a-radio value=2>保密</a-radio>
-        </a-radio-group>
+          <a-select-option value=1 >男</a-select-option>
+          <a-select-option value=0 >女</a-select-option>
+          <a-select-option value=2 >保密</a-select-option>
+        </a-select>
       </a-form-item>
     </a-form>
     <div class="drawer-bootom-button">
@@ -100,19 +105,26 @@ export default {
       form: this.$form.createForm(this),
       deptTreeData: [],
       roleData: [],
-      userDept: [],
+      userDept: null,
+      userRoles: [],
       userId: '',
-      loading: false
+      loading: false,
+      tempUserData: {}
     }
   },
   computed: {
     ...mapState({
-      currentUser: state => state.user.info
+      currentUser: state => state.user.info,
+      rolePage: state => state.sys.rolePage,
+      deptTree: state => state.sys.deptTree,
     })
   },
   created(){
     Promise.all([this.getRolePage(), this.getDeptTree()])
-      .then(r => {})
+      .then(r => {
+        this.roleData = this.rolePage ? this.rolePage.records : []
+        this.deptTreeData = this.deptTree
+      })
       .catch(err=>{
         this.$message.warning(err.message)
       })
@@ -125,24 +137,29 @@ export default {
       this.$emit('close')
     },
     setFormValues ({...user}) {
+      this.tempUserData = user
       this.userId = user.id
       let fields = ['name', 'email', 'status', 'sex', 'mobile']
       Object.keys(user).forEach((key) => {
         if (fields.indexOf(key) !== -1) {
           this.form.getFieldDecorator(key)
           let obj = {}
-          obj[key] = user[key]
+          obj[key] = user[key]+''
           this.form.setFieldsValue(obj)
         }
       })
+
       if (user.roles) {
         this.form.getFieldDecorator('roles')
         let roleArr = user.roles.map(r => r.id)
         this.form.setFieldsValue({'roles': roleArr})
       }
       if (user.deptId) {
-        this.userDept = [user.deptId]
+        this.userDept = user.deptId
       }
+    },
+    onRolesChange(value){
+      this.userRoles = value
     },
     onDeptChange (value) {
       this.userDept = value
@@ -152,7 +169,11 @@ export default {
         if (!err) {
           this.loading = true
           let user = this.form.getFieldsValue()
-          user.roles = user.roles.map(id => {id})
+          let roles = []
+          for(let i=0,n=this.userRoles.length; i<n;i++){
+            roles.push({id: this.userRoles[i]})
+          }
+          user.roles = roles 
           user.id = this.userId
           user.deptId = this.userDept
           updateUser(this.userId, { ...user})
