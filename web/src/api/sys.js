@@ -47,3 +47,19 @@ export function updateUser (id, params) {
     data: params
   })
 }
+
+// 锁定用户
+export function lockUser (id) {
+  return axios({
+    method: 'get',
+    url: `/users/lock/${id}`
+  })
+}
+
+// 解除用户锁定
+export function unLockUser (id) {
+  return axios({
+    method: 'get',
+    url: `/users/unlock/${id}`
+  })
+}

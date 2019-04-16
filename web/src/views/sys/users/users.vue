@@ -67,6 +67,9 @@
           <a-icon v-action="'user:update'" type="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="edit(record)" title="修改用户"></a-icon>
           &nbsp;
           <a-icon v-action="'user:view'" type="eye" theme="twoTone" twoToneColor="#42b983" @click="view(record)" title="查看"></a-icon>
+          &nbsp;
+          <a-icon type="lock" theme="twoTone" twoToneColor="#42b983" @click="lock(record)" title="锁定" v-if="record.status === 0"></a-icon>
+          <a-icon type="unlock" theme="twoTone" twoToneColor="#42b983" @click="unlock(record)" title="锁定" v-else></a-icon>
         </template>
       </a-table>
     </div>
@@ -108,6 +111,9 @@ import UserEdit from './user_edit'
 import basemixin from '@/mixins/base'
 import { mapState, mapActions } from 'vuex'
 import { getModel } from '@/api/base'
+import { lockUser, unLockUser } from '@/api/sys'
+
+const QUERY_KEYS = { name: 'like', dept_id: 'eq' }
 
 export default {
   name: 'Users',
@@ -126,6 +132,7 @@ export default {
         visiable: false
       },
       selectedRowKeys: [],
+      // 两个字段，需要在
     }
   },
   computed: {
@@ -152,15 +159,7 @@ export default {
             default:
               return text
           }
-        },
-        filters: [
-          { text: '男', value: 1 },
-          { text: '女', value: 0 },
-          { text: '保密', value: 2 }
-        ],
-        filterMultiple: false,
-        filteredValue: filteredInfo.sex || null,
-        onFilter: (value, record) => record.sex.includes(value)
+        }
       }, {
         title: '邮箱',
         dataIndex: 'email',
@@ -201,6 +200,7 @@ export default {
   },
   created () {
     this.modelname = 'users'
+    this.queryKeys = QUERY_KEYS
   },
   mounted () {
   },
@@ -260,7 +260,7 @@ export default {
       this.userInfo.visiable = false
     },
     handleDeptChange (value) {
-      this.queryParams.deptId = value || ''
+      this.queryParams.dept_id = value || ''
     },
     handleDateChange (value) {
       if (value) {
@@ -280,10 +280,12 @@ export default {
         centered: true,
         onOk () {
           let userIds = []
+          console.log(that.selectedRowKeys)
+          console.log(that.dataSource)
           for (let key of that.selectedRowKeys) {
-            userIds.push(that.dataSource[key].userId)
+            userIds.push(that.dataSource[key-1].id)
           }
-          this.deleteAllById(userIds).then(() => {
+          that.deleteAllById(userIds).then(() => {
             that.$message.success('删除成功')
             that.selectedRowKeys = []
             that.search()
@@ -340,6 +342,42 @@ export default {
       this.$refs.deptTree.reset()
       this.fetchPage()
     },
+    lock(record){
+      const that = this
+      this.$confirm({
+        title: '确认',
+        content: '您确认锁定该用户么？',
+        onOk() {
+          return new Promise((resolve, reject) => {
+            lockUser(record.id).then(()=> {
+              that.search()
+              resolve()
+            }).catch(err => {
+              that.$notification.error({message: '发生错误！'})
+            })
+          }).catch(() => reject());
+        },
+        onCancel() {},
+      });
+    },
+    unlock(record){
+      const that = this
+      this.$confirm({
+        title: '确认',
+        content: '您确认解锁该用户么？',
+        onOk() {
+          return new Promise((resolve, reject) => {
+            unLockUser(record.id).then(()=> {
+              that.search()
+              resolve()
+            }).catch(err => {
+              that.$notification.error({message: '发生错误！'})
+            })
+          }).catch(() => reject());
+        },
+        onCancel() {},
+      });
+    }
   }
 }
 </script>

@@ -8,6 +8,7 @@ export default {
   data () {
     return {
       modelname: '',
+      queryKeys: {},
       // 查询条件
       queryParams: {},
       filteredInfo: null,
@@ -46,9 +47,9 @@ export default {
       this.sortedInfo = sorter
       this.userInfo.visiable = false
       this.fetchPage({
-        sortField: sorter.field,
-        sortOrder: sorter.order,
-        ...this.queryParams,
+        orderby: sorter.field,
+        asc: sorter.order === 'ascend',
+        query: this.getQueryItems(),
         ...filters
       })
     },
@@ -86,7 +87,8 @@ export default {
       const result = []
       console.log(this.queryParams)
       for (const key in this.queryParams) {
-        const item = { col: key, type: 'like', value: this.queryParams[key] }
+        const type = this.queryKeys[key] ? this.queryKeys[key] : 'like'
+        const item = { col: key, type, value: this.queryParams[key] }
         result.push(item)
       }
       console.log(result)
@@ -102,7 +104,7 @@ export default {
       }
       this.fetchPage({
         orderby: sortField,
-        asc: sortOrder,
+        asc: sortOrder === 'ascend',
         query: this.getQueryItems(),
         ...filteredInfo
       })
@@ -117,7 +119,7 @@ export default {
       }
       api.downExcel(this.modelname, {
         orderby: sortField,
-        asc: sortOrder,
+        asc: sortOrder === 'ascend',
         query: this.getQueryItems(),
         ...filteredInfo
       })

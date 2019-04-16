@@ -1,6 +1,8 @@
 package hoopoe.core.base;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -87,11 +89,12 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
 
     // 批量删除
     @PostMapping("/delall")
-    public APIResult deleteAll(@RequestBody List<Long> ids)throws Exception{
+    public APIResult deleteAll(@RequestBody JSONObject params)throws Exception{
+        JSONArray ids = params.getJSONArray("ids");
         if(ids == null || ids.isEmpty())return APIResult.fail("参数不正确！");
         QueryWrapper<M> queryWrapper = new QueryWrapper<>();
         M m = this.getModelClass().newInstance();
-        queryWrapper.in(m.getPrimaryKey(), ids);
+        queryWrapper.in("id", ids);
         this.service.remove(queryWrapper);
         return APIResult.ok("success");
     }

@@ -1,6 +1,7 @@
 package hoopoe.sys.controller;
 
 import cn.hutool.core.util.RandomUtil;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -77,6 +78,16 @@ public class UserController extends BaseController<User,UserService> {
         return result;
     }
 
+    @Override
+    @PostMapping("/delall")
+    public APIResult deleteAll(@RequestBody JSONObject params)throws Exception{
+        JSONArray ids = params.getJSONArray("ids");
+        String token = JWTUtil.getToken(this.request);
+        JWTToken jwtToken = JWTUtil.getFromToken(token);
+        if(ids.contains(jwtToken.getId()))return APIResult.fail("不能删除自己！");
+        return super.deleteAll(params);
+    }
+
     @GetMapping("/{id}")
     @Override
     public APIResult getById(@PathVariable("id") Long id) throws Exception {
@@ -151,10 +162,20 @@ public class UserController extends BaseController<User,UserService> {
     }
 
     //禁用用户
-    @GetMapping("/lockuser")
-    public APIResult lockUser(@Token String token, @RequestBody JSONObject params) throws Exception {
-        User user = getByParam(params);
+    @GetMapping("/lock/{id}")
+    public APIResult lockUser(@Token String token, @PathVariable("id") Long id) throws Exception {
+        User user = this.service.getById(id);
+        if(user.getStatus() == User.STATUS_LOCK)return APIResult.fail("用户已经被禁用了！");
         user.setStatus(User.STATUS_LOCK);
+        this.service.updateById(user);
+        return APIResult.ok("success");
+    }
+
+    @GetMapping("/unlock/{id}")
+    public APIResult unLockUser(@Token String token,  @PathVariable("id") Long id) throws Exception {
+        User user = this.service.getById(id);
+        if(user.getStatus() == User.STATUS_VALID)return APIResult.fail("用户已经为正常状态！");
+        user.setStatus(User.STATUS_VALID);
         this.service.updateById(user);
         return APIResult.ok("success");
     }
