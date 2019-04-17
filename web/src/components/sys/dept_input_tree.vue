@@ -3,6 +3,7 @@
     :allowClear="true"
     :dropdownStyle="{ maxHeight: '220px', overflow: 'auto' }"
     :treeData="deptTree"
+    placeholder="请选择部门"
     v-model="value">
   </a-tree-select>
 </template>

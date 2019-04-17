@@ -5,48 +5,35 @@
   <a-card :bordered="false" class="card-area">
     <div>
       <!-- 搜索区域 -->
-      <a-form layout="horizontal">
-        <a-row >
-        <div class="fold">
-            <a-col :md="12" :sm="24" >
-              <a-form-item
-                label="用户名"
-                :labelCol="{span: 4}"
-                :wrapperCol="{span: 18, offset: 2}">
-                <a-input v-model="queryParams.name"/>
-              </a-form-item>
-            </a-col>
-            <a-col :md="12" :sm="24" >
-              <a-form-item
-                label="部门"
-                :labelCol="{span: 4}"
-                :wrapperCol="{span: 18, offset: 2}">
-                <dept-input-tree @change="handleDeptChange"
-                                 ref="deptTree">
-                </dept-input-tree>
-              </a-form-item>
-            </a-col>
-        </div>
-          <span style="float: right; margin-top: 3px;">
-            <a-button type="primary" @click="search">查询</a-button>
-            <a-button style="margin-left: 8px" @click="reset">重置</a-button>
-          </span>
-        </a-row>
+      <a-form layout="inline">
+        <a-form-item>
+          <a-input v-model="queryParams.name" placeholder="请输入用户名"/>
+        </a-form-item>
+        <a-form-item>
+          <dept-input-tree style="width:10rem;" @change="handleDeptChange" ref="deptTree" />
+        </a-form-item>
+        <a-form-item>
+          <a-select style="width:10rem;" :allowClear="true" v-model="queryParams.status" placeholder="请选择用户状态">
+            <a-select-option value=0 >有效</a-select-option>
+            <a-select-option value=1 >锁定</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item>
+          <a-button type="primary" @click="search" icon="search">搜索</a-button>
+          <a-button type="primary" @click="add" v-action="'user:add'" class="m-a-1" icon="plus">新增</a-button>
+          <a-button type="warning" @click="batchDelete" v-action="'user:delete'" class="m-r-1" icon="delete">删除</a-button>
+          <a-dropdown v-hasAnyPermission="'user:reset','user:export'">
+            <a-menu slot="overlay">
+              <a-menu-item v-action="'user:reset'" key="password-reset" @click="resetPassword">密码重置</a-menu-item>
+              <a-menu-item v-action="'user:export'" key="export-data" @click="exportExcel">导出Excel</a-menu-item>
+            </a-menu>
+          </a-dropdown>
+        </a-form-item>
       </a-form>
     </div>
-    <div>
-      <div class="operator">
-        <a-button type="primary" ghost @click="add" v-action="'user:add'">新增</a-button>
-        <a-button @click="batchDelete" v-action="'user:delete'">删除</a-button>
-        <a-dropdown v-hasAnyPermission="'user:reset','user:export'">
-          <a-menu slot="overlay">
-            <a-menu-item v-action="'user:reset'" key="password-reset" @click="resetPassword">密码重置</a-menu-item>
-            <a-menu-item v-action="'user:export'" key="export-data" @click="exportExcel">导出Excel</a-menu-item>
-          </a-menu>
-        </a-dropdown>
-      </div>
+    <div class="p-t-1">
       <!-- 表格区域 -->
-      <a-table ref="TableInfo"
+      <a-table ref="TableInfo" size="middle"
               rowKey="id"
                :columns="columns"
                :dataSource="dataSource"
@@ -64,12 +51,12 @@
           </a-popover>
         </template>
         <template slot="operation" slot-scope="text, record">
-          <a-icon v-action="'user:update'" type="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="edit(record)" title="修改用户"></a-icon>
+          <a-icon v-action="'user:update'" type="edit" theme="twoTone" @click="edit(record)" title="修改用户"></a-icon>
           &nbsp;
-          <a-icon v-action="'user:view'" type="eye" theme="twoTone" twoToneColor="#42b983" @click="view(record)" title="查看"></a-icon>
+          <a-icon v-action="'user:view'" type="info-circle" theme="twoTone" @click="view(record)" title="查看"></a-icon>
           &nbsp;
-          <a-icon type="lock" theme="twoTone" twoToneColor="#42b983" @click="lock(record)" title="锁定" v-if="record.status === 0"></a-icon>
-          <a-icon type="unlock" theme="twoTone" twoToneColor="#42b983" @click="unlock(record)" title="锁定" v-else></a-icon>
+          <a-icon type="lock" theme="twoTone" @click="lock(record)" title="锁定" v-if="record.status === 0"></a-icon>
+          <a-icon type="unlock" theme="twoTone" @click="unlock(record)" title="锁定" v-else></a-icon>
         </template>
       </a-table>
     </div>
@@ -179,7 +166,7 @@ export default {
             case 1:
               return <a-tag color="red">锁定</a-tag>
             case 0:
-              return <a-tag color="cyan">有效</a-tag>
+              return <a-tag color="green">有效</a-tag>
             default:
               return text
           }

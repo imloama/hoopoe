@@ -39,7 +39,8 @@ export default {
   }
 }
 </script>
-<style>
+<style lang="less">
+  @import './style/app.less';
   #app {
     height: 100%;
   }
