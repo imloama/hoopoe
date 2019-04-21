@@ -37,6 +37,11 @@ public class Dept extends BaseModel<Dept,Long> implements ITree {
     @ZField(type = FieldType.Integer, name = "parentId", label = "父级", show = false, showLabel = false)
     private Long parentId;
 
+    @NotBlank(message = "必填")
+    @Size(max = 10, message = "长度限制")
+    @ExcelField(value = "部门编码")
+    private String code;
+
     @ZField(name = "name", label = "名称", rules = {
             @ZRule(required = true)
     })
@@ -44,6 +49,11 @@ public class Dept extends BaseModel<Dept,Long> implements ITree {
     @Size(max = 20, message = "长度限制")
     @ExcelField(value = "部门名称")
     private String name;
+
+    @NotBlank(message = "必填")
+    @Size(max = 125, message = "长度限制")
+    @ExcelField(value = "部门全称")
+    private String fullname;
 
     @ZField(name = "orderBy", label = "排序")
     private Integer orderBy;
