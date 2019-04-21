@@ -1,11 +1,7 @@
 <template>
   <a-card :bordered="false"  class="depts-wrapper">
 
-    <!--查询条件-->
-
-    <a-table rowKey="key" :columns="columns" 
-    :dataSource="deptTree"
-    :loading="loading"></a-table>
+    <a-table rowKey="key" :columns="columns" size="middle" :dataSource="deptTree" :loading="loading"></a-table>
   </a-card>
 </template>
 <script>
@@ -19,8 +15,16 @@ export default {
           dataIndex: 'key'
         },
         {
+          title: '编码',
+          dataIndex: 'code',
+        },
+        {
           title: '名称',
           dataIndex: 'label',
+        },
+        {
+          title: '全称',
+          dataIndex: 'fullname',
         }
       ],
       loading: false
@@ -41,7 +45,7 @@ export default {
     })
   },
   methods: {
-    ...mapActions(['getDeptTree']),
+    ...mapActions(['getDeptTree'])
   },
   
 }

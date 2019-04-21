@@ -87,8 +87,10 @@ export default {
       const result = []
       console.log(this.queryParams)
       for (const key in this.queryParams) {
+        const value = this.queryParams[key]
+        if (value === null || value === undefined || typeof value === 'undefined') continue
         const type = this.queryKeys[key] ? this.queryKeys[key] : 'like'
-        const item = { col: key, type, value: this.queryParams[key] }
+        const item = { col: key, type, value }
         result.push(item)
       }
       console.log(result)

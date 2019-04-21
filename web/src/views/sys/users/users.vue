@@ -170,14 +170,7 @@ export default {
             default:
               return text
           }
-        },
-        filters: [
-          { text: '有效', value: 0 },
-          { text: '锁定', value: 1 }
-        ],
-        filterMultiple: false,
-        filteredValue: filteredInfo.status || null,
-        onFilter: (value, record) => record.status.includes(value)
+        }
       }, {
         title: '操作',
         dataIndex: 'operation',
