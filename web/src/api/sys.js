@@ -7,10 +7,11 @@ export const MODEL_DICTS = 'dicts'
 export const MODEL_DEPTS = 'depts'
 
 // 查询所有的部门，树状结构
-export function getDepts () {
+export function getDepts (params) {
   return axios({
     url: '/depts/tree',
-    method: 'get'
+    method: 'post',
+    data: params
   })
 }
 

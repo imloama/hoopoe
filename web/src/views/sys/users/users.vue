@@ -21,7 +21,7 @@
         <a-form-item>
           <a-button type="primary" @click="search" icon="search">搜索</a-button>
           <a-button type="primary" @click="add" v-action="'user:add'" class="m-a-1" icon="plus">新增</a-button>
-          <a-button type="warning" @click="batchDelete" v-action="'user:delete'" class="m-r-1" icon="delete">删除</a-button>
+          <a-button type="danger" @click="batchDelete" v-action="'user:delete'" class="m-r-1" icon="delete">删除</a-button>
           <a-dropdown v-hasAnyPermission="'user:reset','user:export'">
             <a-menu slot="overlay">
               <a-menu-item v-action="'user:reset'" key="password-reset" @click="resetPassword">密码重置</a-menu-item>
