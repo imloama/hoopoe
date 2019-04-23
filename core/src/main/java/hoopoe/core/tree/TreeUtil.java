@@ -23,6 +23,7 @@ public final class TreeUtil {
                 return;
             }
             Tree<T> parent = nodemap.get(tree.getParentKey());
+            if(parent == null)return;
             List<Tree<T>> children = parent.getChildren();
             if(children == null){
                children = Lists.newArrayList();

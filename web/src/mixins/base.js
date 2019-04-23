@@ -85,7 +85,6 @@ export default {
     }, // end of fetchPage
     getQueryItems () {
       const result = []
-      console.log(this.queryParams)
       for (const key in this.queryParams) {
         const value = this.queryParams[key]
         if (value === null || value === undefined || typeof value === 'undefined') continue
@@ -93,7 +92,6 @@ export default {
         const item = { col: key, type, value }
         result.push(item)
       }
-      console.log(result)
       return result
     },
     search () {

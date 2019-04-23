@@ -13,7 +13,7 @@ const state = {
 }
 
 const actions = {
-  async getDeptTree ({ commit, state }, params) {
+  async getDeptTree ({ commit, state }, params = { query: [] }) {
     const data = await sysapi.getDepts(params)
     commit(GET_DEPT_TREE, data ? data.children ? data.children : [] : [])
   },

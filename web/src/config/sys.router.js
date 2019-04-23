@@ -11,7 +11,7 @@ export default {
     {
       path: '/sys/depts',
       name: 'depts',
-      component: () => import('@/views/sys/depts'),
+      component: () => import('@/views/sys/depts/depts'),
       meta: { title: '部门管理', keepAlive: true, permission: [ 'depts' ] }
     },
     {

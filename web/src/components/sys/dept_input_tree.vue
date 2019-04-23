@@ -29,7 +29,7 @@ export default {
     }
   },
   created () {
-    this.getDeptTree().then(()=>{}).catch(err=>console.log(err))
+    this.getDeptTree({query: []}).then(()=>{}).catch(err=>console.log(err))
   },
   watch: {
     value (value) {
