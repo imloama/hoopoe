@@ -24,8 +24,8 @@ export default {
   },
   methods: {
     ...mapActions(['getDeptTree']),
-    reset () {
-      this.value = ''
+    reset (val) {
+      this.value = val || ''
     }
   },
   created () {

@@ -20,9 +20,14 @@
       <a-table rowKey="key" :columns="columns" size="middle" 
         :dataSource="dataSource" :loading="loading" defaultExpandAllRows
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
-        ></a-table>
+        >
+          <template slot="operation" slot-scope="text, record">
+            <a-icon type="edit" theme="twoTone" @click="edit(record)" title="修改"></a-icon>
+          </template>
+        </a-table>
     </div>
     <depts-add v-if="addViewVisable" @close="onAddViewClose" @ok="onAddViewOK"/>
+    <depts-edit ref="deptEdit" v-if="editViewVisable" @close="onEditViewClose" @ok="onEditViewOK"/>
   </a-card>
 </template>
 <script>
@@ -30,9 +35,11 @@ import { mapState, mapActions } from 'vuex'
 import * as sysapi from '@/api/sys'
 import * as api from '@/api/base'
 import DeptsAdd from './depts_add'
+import DeptsEdit from './depts_edit'
 export default {
   components: {
     DeptsAdd,
+    DeptsEdit,
   },
   data () {
     return {
@@ -52,13 +59,18 @@ export default {
         {
           title: '全称',
           dataIndex: 'fullname',
-        }
+        }, {
+        title: '操作',
+        dataIndex: 'operation',
+        scopedSlots: { customRender: 'operation' }
+      }
       ],
       loading: false,
       queryParams:{},
       dataSource: [],
       selectedRowKeys: [],
       addViewVisable: false,
+      editViewVisable: false,
     }
   },
   computed:{
@@ -123,6 +135,18 @@ export default {
     add(){
       this.addViewVisable = true
     },
+    edit(record){
+      api.getModel('depts',record.key)
+        .then(dept => {
+          this.editViewVisable = true
+          this.$nextTick(()=>{
+            this.$refs.deptEdit.setFormData(dept);
+          })
+        })
+        .catch(err => {
+          this.$message.warning('请求服务器发生错误！'+ err.message)
+        })
+    },
     batchDelete(){
       if (!this.selectedRowKeys.length) {
         this.$message.warning('请选择需要删除的记录')
@@ -162,6 +186,13 @@ export default {
     },
     onAddViewOK(){
       this.addViewVisable = false
+      this.search()
+    },
+    onEditViewClose(){
+      this.editViewVisable = false
+    },
+    onEditViewOK(){
+      this.editViewVisable = false
       this.search()
     }
   },
