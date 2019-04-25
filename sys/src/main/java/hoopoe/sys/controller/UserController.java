@@ -126,7 +126,7 @@ public class UserController extends BaseController<User,UserService> {
         String newpwdEncode = encoder.encode(newpwd);
         user.setPwd(newpwdEncode);
         this.service.updateById(user);
-        return APIResult.ok("success");
+        return APIResult.ok("success", true);
     }
 
 
@@ -168,7 +168,7 @@ public class UserController extends BaseController<User,UserService> {
         if(user.getStatus() == User.STATUS_LOCK)return APIResult.fail("用户已经被禁用了！");
         user.setStatus(User.STATUS_LOCK);
         this.service.updateById(user);
-        return APIResult.ok("success");
+        return APIResult.ok("success", true);
     }
 
     @GetMapping("/unlock/{id}")
@@ -177,7 +177,7 @@ public class UserController extends BaseController<User,UserService> {
         if(user.getStatus() == User.STATUS_VALID)return APIResult.fail("用户已经为正常状态！");
         user.setStatus(User.STATUS_VALID);
         this.service.updateById(user);
-        return APIResult.ok("success");
+        return APIResult.ok("success", true);
     }
 
     @GetMapping("/check/{username}")

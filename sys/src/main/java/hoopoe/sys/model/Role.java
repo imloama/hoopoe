@@ -31,6 +31,11 @@ public class Role extends BaseModel<Role,Long> {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @NotBlank(message = "必填项")
+    @Size(max = 10, message = "长度限制")
+    @ExcelField(value = "角色编码")
+    private String code;
+
     @ZField(name = "name", label = "角色名称", rules = {
             @ZRule(required = true)
     })

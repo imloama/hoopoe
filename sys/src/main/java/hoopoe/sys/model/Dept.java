@@ -65,8 +65,8 @@ public class Dept extends BaseModel<Dept,Long> implements ITree {
     private Date modifyTime;
 
     @Override
-    public <ID> ID getPrimaryKey() {
-        return null;
+    public Long getPrimaryKey() {
+        return this.id;
     }
 
     @Override

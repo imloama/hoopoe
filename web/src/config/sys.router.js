@@ -23,7 +23,7 @@ export default {
     {
       path: '/sys/roles',
       name: 'roles',
-      component: () => import('@/views/sys/roles'),
+      component: () => import('@/views/sys/roles/roles'),
       meta: { title: '角色管理', keepAlive: true, permission: [ 'roles' ] }
     },
     {

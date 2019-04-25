@@ -26,8 +26,13 @@ public class DeptService extends BaseServiceImpl<DeptMapper, Dept> {
     }
     @Transactional
     public boolean update(Dept dept) {
-        dept.setModifyTime(new Date());
-        return this.baseMapper.updateById(dept) > 0;
+        Dept origin = this.getById(dept.getId());
+        origin.setModifyTime(new Date());
+        origin.setCode(dept.getCode());
+        origin.setName(dept.getName());
+        origin.setFullname(dept.getFullname());
+        origin.setParentId(dept.getParentId() == null ? 0 : dept.getParentId());
+        return this.baseMapper.updateById(origin) > 0;
     }
 
     @Transactional

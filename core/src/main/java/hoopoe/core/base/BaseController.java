@@ -69,7 +69,7 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
     @PostMapping("/create")
     public APIResult create(@RequestBody  M model)throws Exception{
         this.service.create(model);
-        return APIResult.ok("success");
+        return APIResult.ok("success", true);
     }
 
 
@@ -77,14 +77,14 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
     public APIResult update(@PathVariable("id") Long id, @RequestBody  M model)throws Exception{
         if(id!=model.getPrimaryKey())return APIResult.fail("参数错误！");
         this.service.update(model);
-        return APIResult.ok("success");
+        return APIResult.ok("success", true);
     }
 
 
     @GetMapping("/del/{id}")
     public APIResult delete(@PathVariable("id") Long id)throws Exception{
         this.service.removeById(id);
-        return APIResult.ok("success");
+        return APIResult.ok("success", true);
     }
 
     // 批量删除
@@ -96,7 +96,7 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
         M m = this.getModelClass().newInstance();
         queryWrapper.in("id", ids);
         this.service.remove(queryWrapper);
-        return APIResult.ok("success");
+        return APIResult.ok("success", true);
     }
 
     /**
@@ -160,7 +160,7 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
     @GetMapping("/action/{name}/{id}")
     public APIResult action(@PathVariable("name") String name, @PathVariable("id") Long id) throws Exception {
         this.service.doAction(name, id);
-        return APIResult.ok("success");
+        return APIResult.ok("success", true);
     }
 
 
