@@ -161,7 +161,7 @@ public class User extends BaseModel<User,Long> implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if(this.roles!=null){
-            return this.roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toSet());
+            return this.roles.stream().map(role -> new SimpleGrantedAuthority(role.getCode())).collect(Collectors.toSet());
         }
         return new ArrayList<>();
     }

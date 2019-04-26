@@ -24,11 +24,14 @@
         >
           <template slot="operation" slot-scope="text, record">
             <a-icon type="edit" theme="twoTone" @click="edit(record)" title="修改"></a-icon>
+             &nbsp;
+            <a-icon type="info-circle" theme="twoTone" @click="view(record)" title="查看"></a-icon>
           </template>
         </a-table>
     </div>
-    <role-add v-if="addViewVisable" @close="onAddViewClose" @ok="onAddViewOK"/>
-    <role-edit ref="modelEdit" v-if="editViewVisable" @close="onEditViewClose" @ok="onEditViewOK"/>
+    <roles-add v-if="addViewVisable" @close="onAddViewClose" @ok="onAddViewOK"/>
+    <roles-edit ref="modelEdit" v-if="editViewVisable" @close="onEditViewClose" @ok="onEditViewOK"/>
+    <roles-info v-if="infoViewVisable" ref="modelInfo" @close="onInfoViewClose"></roles-info>
   </a-card>
 </template>
 <script>
@@ -37,10 +40,12 @@ import * as sysapi from '@/api/sys'
 import * as api from '@/api/base'
 import RolesAdd from './roles_add'
 import RolesEdit from './roles_edit'
+import RolesInfo from './roles_info'
 export default {
   components: {
     RolesAdd,
     RolesAdd,
+    RolesInfo,
   },
   data () {
     return {
@@ -51,11 +56,11 @@ export default {
         },
         {
           title: '名称',
-          dataIndex: 'label',
+          dataIndex: 'name',
         },
         {
-          title: '全称',
-          dataIndex: 'fullname',
+          title: '备注',
+          dataIndex: 'remark',
         }, {
         title: '操作',
         dataIndex: 'operation',
@@ -68,6 +73,7 @@ export default {
       selectedRowKeys: [],
       addViewVisable: false,
       editViewVisable: false,
+      infoViewVisable: false,
       // 分页数据
       paginationInfo: null,
        // 分页配置
@@ -108,7 +114,7 @@ export default {
         params.pageSize = this.pagination.defaultPageSize
         params.pageNum = this.pagination.defaultCurrent
       }
-      sysapi.getRolePage(params).then(data=>{
+      this.getRolePage(params).then(data=>{
         this.$nextTick(()=>{
           const pagination = { ...this.pagination }
           const page = this.rolePage
@@ -141,7 +147,7 @@ export default {
       this.addViewVisable = true
     },
     edit(record){
-      api.getModel('roles',record.id)
+      api.http.get('/roles/'+record.id)
         .then(data => {
           this.editViewVisable = true
           this.$nextTick(()=>{
@@ -151,6 +157,19 @@ export default {
         .catch(err => {
           this.$message.warning('请求服务器发生错误！'+ err.message)
         })
+    },
+    view(){
+      api.http.get('/roles/'+record.id)
+        .then(data => {
+          this.infoViewVisable = false
+          this.$nextTick(()=>{
+            this.$refs.infoEdit.setData(data);
+          })
+        })
+        .catch(err => {
+          this.$message.warning('请求服务器发生错误！'+ err.message)
+        })
+      
     },
     batchDelete(){
       if (!this.selectedRowKeys.length) {
@@ -199,6 +218,9 @@ export default {
     onEditViewOK(){
       this.editViewVisable = false
       this.search()
+    },
+    onInfoViewClose(){
+      this.infoViewVisable = false
     }
   },
   

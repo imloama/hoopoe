@@ -145,7 +145,7 @@ public class UserService extends BaseServiceImpl<UserMapper, User> implements Us
 
     @Transactional(readOnly = true)
     public Set<String> getUserRoles(String userId) {
-        return this.roleService.findByUser(Long.parseLong(userId)).stream().map(Role::getName).collect(Collectors.toSet());
+        return this.roleService.findByUser(Long.parseLong(userId)).stream().map(Role::getCode).collect(Collectors.toSet());
 
     }
     @Transactional(readOnly = true)

@@ -38,7 +38,7 @@ function hasRole(roles, route) {
 }
 
 function filterAsyncRouter (routerMap, roles, menus) {
-  const admin = roles.map(item => item.name).indexOf('admin') > -1
+  const admin = roles.map(item => item.code).indexOf('admin') > -1
   if (admin) return routerMap
   const accessedRouters = routerMap.filter(route => {
     if (hasPermission(menus, route)) {
