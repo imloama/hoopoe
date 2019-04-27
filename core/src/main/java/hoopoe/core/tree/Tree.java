@@ -32,6 +32,11 @@ public class Tree<T extends ITree> implements ITree{
     }
 
     @Override
+    public String getTitle() {
+        return this.getLabel();
+    }
+
+    @Override
     public String getParentKey() {
         return this.source == null ? "" :this.source.getParentKey();
     }

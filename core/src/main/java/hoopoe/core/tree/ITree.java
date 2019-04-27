@@ -7,6 +7,8 @@ public interface ITree {
     String getValue();
 
     String getLabel();
+    // 针对于ant design vue
+    String getTitle();
 
     String getParentKey();
 

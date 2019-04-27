@@ -64,3 +64,10 @@ export function unLockUser (id) {
     url: `/users/unlock/${id}`
   })
 }
+
+export function getMenuTree () {
+  return axios({
+    method: 'get',
+    url: `/menus/tree`
+  })
+}

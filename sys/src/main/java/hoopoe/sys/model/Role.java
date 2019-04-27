@@ -17,6 +17,7 @@ import lombok.EqualsAndHashCode;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @ZFarm(apiPrefix = "/api/v1/roles")
@@ -60,4 +61,10 @@ public class Role extends BaseModel<Role,Long> {
     public Long getPrimaryKey() {
         return id;
     }
+
+    /**
+     * 前台修改时，带入要改动的menuIds，从而实现更新
+     */
+    private transient List<Long> menuIds;
+
 }

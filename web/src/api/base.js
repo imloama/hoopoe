@@ -86,3 +86,10 @@ export function downExcel (name, params) {
     data: params
   })
 }
+
+export function getAllModel (name, params) {
+  return axios({
+    url: `/${name}/all`,
+    method: 'GET'
+  })
+}

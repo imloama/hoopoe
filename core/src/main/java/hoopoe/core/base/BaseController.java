@@ -163,6 +163,11 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
         return APIResult.ok("success", true);
     }
 
+    @GetMapping("/all")
+    public APIResult all()throws Exception{
+        return APIResult.ok("success", this.service.list());
+    }
+
 
 
 }

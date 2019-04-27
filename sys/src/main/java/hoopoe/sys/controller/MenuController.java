@@ -2,6 +2,8 @@ package hoopoe.sys.controller;
 
 import com.github.imloama.mybatisplus.bootext.base.APIResult;
 import hoopoe.core.base.BaseController;
+import hoopoe.core.tree.Tree;
+import hoopoe.core.tree.TreeUtil;
 import hoopoe.sys.model.Dict;
 import hoopoe.sys.model.Menu;
 import hoopoe.sys.service.DictService;
@@ -38,6 +40,13 @@ public class MenuController extends BaseController<Menu, MenuService> {
     public APIResult getByUserId(@PathVariable("id") Long id){
         List<Menu> menus = this.service.findByUser(id);
         return APIResult.ok("success", menus);
+    }
+
+    @GetMapping("/tree")
+    public APIResult getMenuTree(){
+        List<Menu> list = this.service.list();
+        Tree<Menu> tree = TreeUtil.build(list);
+        return APIResult.ok("success", tree);
     }
 
 

@@ -2,14 +2,19 @@
  * sys store
  */
 import * as sysapi from '@/api/sys'
+import * as base from '@/api/base'
+import { getRemainingRequest } from 'loader-utils';
 
 export const GET_DEPT_TREE = 'GET_DEPT_TREE'
 export const GET_ROLES_PAGE = 'GET_ROLES_PAGE'
+export const GET_MENU_TREE = 'GET_MENU_TREE'
 
 const state = {
   deptTree: null,
   // role page
-  rolePage: null
+  rolePage: null,
+  // 当前所有的菜单项
+  menuTree: null
 }
 
 const actions = {
@@ -20,7 +25,12 @@ const actions = {
   async getRolePage ({ commit, state }, params) {
     const page = await sysapi.getRoles(params)
     commit(GET_ROLES_PAGE, page)
+  },
+  async getMenuTree ({ commit, state }, params) {
+    const data = await sysapi.getMenuTree()
+    commit(GET_MENU_TREE, data)
   }
+
 }
 
 const mutations = {
@@ -29,6 +39,9 @@ const mutations = {
   },
   [GET_ROLES_PAGE] (state, page) {
     state.rolePage = page
+  },
+  [GET_MENU_TREE] (state, data) {
+    state.menuTree = data
   }
 }
 
