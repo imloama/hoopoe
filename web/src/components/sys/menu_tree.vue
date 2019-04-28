@@ -46,7 +46,7 @@ export default {
   created(){
     this.getMenuTree().then(()=>{
       this.$nextTick(()=>{
-        
+        this.rebuildMenuTree()
       })
     }).catch(err=>{
       console.error(err)
@@ -54,6 +54,19 @@ export default {
   },
   methods: {
     ...mapActions(['getMenuTree']),
+    rebuildMenuTree(){
+      let children = this.menuTree.children
+      if(!children)return
+      this.treeData = children.map(item => this.transform(item))
+    },
+    transform(item){
+      let titem = Object.assign({title: item.label}, item)
+      let child = item.children
+      if(child === null || typeof child === 'undefined' || child.length === 0)return titem;
+      child = child.map( c => this.transform(c))
+      titem.children = child
+      return titem
+    },
     onExpand (expandedKeys) {
       console.log('onExpand', expandedKeys)
       // if not set autoExpandParent to false, if children expanded, parent can not collapse.
@@ -64,15 +77,17 @@ export default {
     onCheck (checkedKeys) {
       console.log('onCheck', checkedKeys)
       this.checkedKeys = checkedKeys
+      this.$emit('check', checkedKeys)
     },
     onSelect (selectedKeys, info) {
       console.log('onSelect', info)
       this.selectedKeys = selectedKeys
+      this.$emit('select', selectedKeys)
     },
+    // 设置当前选中的内容
+    setCheckedKeys(checkedKeys){
+      this.checkedKeys = checkedKeys;
+    }
   }
 }
 </script>
-
-<style>
-
-</style>

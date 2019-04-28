@@ -32,6 +32,9 @@
                    :validateStatus="validateStatus">
         <dept-input-tree style="width:100%;" @change="handleDeptChange" ref="deptTree" />
       </a-form-item>
+      <div class="menu-tree-wrapper">
+        <menu-tree @check="onMenuTreeCheck" ref="menuTree"/>
+      </div>
 
       <div class="drawer-bootom-button">
         <a-popconfirm title="确定放弃编辑？" @confirm="onClose" okText="确定" cancelText="取消">
@@ -46,6 +49,7 @@
 
 <script>
 import DeptInputTree from '@/components/sys/dept_input_tree'
+import MenuTree from '@/components/sys/menu_tree'
 import * as api from '@/api/base'
 const formItemLayout = {
   labelCol: { span: 3 },
@@ -53,7 +57,8 @@ const formItemLayout = {
 }
 export default {
   components: {
-    DeptInputTree
+    DeptInputTree,
+    MenuTree
   },
   data () {
     return {
@@ -61,9 +66,8 @@ export default {
       form: this.$form.createForm(this),
       formItemLayout,
       validateStatus: '',
-      dept_id: null,
       editVisiable: true,
-      did: null,
+      menus: null,
     }
   },
   methods: {
@@ -71,9 +75,10 @@ export default {
       this.reset()
       this.$emit('close')
     },
-    setFormData(dept){
-      this.did = dept.key
-      let fields = ['name', 'code', 'fullname']
+    setFormData(data){
+      const role = data.role
+      this.menu = data.menus
+      let fields = ['name', 'code', 'remark']
       Object.keys(dept).forEach((key) => {
         if (fields.indexOf(key) !== -1) {
           this.form.getFieldDecorator(key)
@@ -82,13 +87,14 @@ export default {
           this.form.setFieldsValue(obj)
         }
       })
-      this.dept_id = dept.parentId + ''
-      if(this.dept_id !=='0'){
-        this.$nextTick(()=>{
-          this.$refs.deptTree.reset(this.dept_id);
-        })
-      } 
+      const checkedKeys = this.menus.map(m => m.id)
       
+    },
+    getMenuIds(item){
+      let child = item.children
+      if(child === null || typeof child === 'undefined' || child.length === 0)return [item.key]
+      let keys = child.map(c => this.getMenuIds(c.key)).reduce((a,b)=> a.concat(b))
+      return [key, ...keys]
     },
     reset () {
       this.validateStatus = ''
@@ -115,6 +121,9 @@ export default {
      handleDeptChange (value) {
       this.dept_id = value || ''
     },
+    onMenuTreeCheck(checkedKeys){
+
+    }
 
   }
 }
