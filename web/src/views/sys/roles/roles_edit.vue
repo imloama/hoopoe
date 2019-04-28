@@ -93,8 +93,8 @@ export default {
     getMenuIds(item){
       let child = item.children
       if(child === null || typeof child === 'undefined' || child.length === 0)return [item.key]
-      let keys = child.map(c => this.getMenuIds(c.key)).reduce((a,b)=> a.concat(b))
-      return [key, ...keys]
+      let keys = child.map(c => this.getMenuIds(c)).reduce((a,b)=> a.concat(b))
+      return [item.key, ...keys]
     },
     reset () {
       this.validateStatus = ''
