@@ -61,7 +61,7 @@ export default {
   methods: {
     setData(result){
       const role = result.role;
-      const menus = result.menu;//tree
+      const menus = result.menus.children;//tree
     },
     handleCancleClick () {
       this.$emit('close')

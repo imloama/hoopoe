@@ -44,7 +44,7 @@ import RolesInfo from './roles_info'
 export default {
   components: {
     RolesAdd,
-    RolesAdd,
+    RolesEdit,
     RolesInfo,
   },
   data () {
@@ -147,7 +147,7 @@ export default {
       this.addViewVisable = true
     },
     edit(record){
-      api.http.get('/roles/'+record.id)
+      api.http.get('/roles/'+record.id+'/info')
         .then(data => {
           this.editViewVisable = true
           this.$nextTick(()=>{
@@ -159,7 +159,7 @@ export default {
         })
     },
     view(){
-      api.http.get('/roles/'+record.id)
+      api.http.get('/roles/'+record.id+'/info')
         .then(data => {
           this.infoViewVisable = false
           this.$nextTick(()=>{

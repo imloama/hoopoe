@@ -22,7 +22,7 @@
       <a-form-item label='全称'
                    v-bind="formItemLayout"
                    :validateStatus="validateStatus">
-        <a-input v-decorator="['fullname',{rules: [{ required: true, message: '用户名不能为空'}]}]"/>
+        <a-input v-decorator="['fullname',{rules: [{ required: true, message: '全称不能为空'}]}]"/>
       </a-form-item>
       <a-form-item label='父部门'
                    v-bind="formItemLayout"

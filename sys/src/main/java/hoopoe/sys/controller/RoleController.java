@@ -45,7 +45,7 @@ public class RoleController extends BaseController<Role,RoleService> {
      * @return
      * @throws Exception
      */
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/info")
     public APIResult info(@PathVariable("id") Long id)throws Exception{
         Role role = this.roleService.getById(id);
         List<Menu> menus = this.menuService.findByRoleId(id);

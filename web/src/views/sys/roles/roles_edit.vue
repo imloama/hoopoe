@@ -3,7 +3,7 @@
  */
 <template>
   <a-drawer
-    title="修改部门"
+    title="修改角色"
     :maskClosable="false"
     width=650
     placement="right"
@@ -22,18 +22,13 @@
                    :validateStatus="validateStatus">
         <a-input v-decorator="['name',{rules: [{ required: true, message: '名称不能为空'}]}]"/>
       </a-form-item>
-      <a-form-item label='全称'
+      <a-form-item label='角色描述'
                    v-bind="formItemLayout"
                    :validateStatus="validateStatus">
-        <a-input v-decorator="['fullname',{rules: [{ required: true, message: '用户名不能为空'}]}]"/>
-      </a-form-item>
-      <a-form-item label='父部门'
-                   v-bind="formItemLayout"
-                   :validateStatus="validateStatus">
-        <dept-input-tree style="width:100%;" @change="handleDeptChange" ref="deptTree" />
+        <a-input v-decorator="['remark']"/>
       </a-form-item>
       <div class="menu-tree-wrapper">
-        <menu-tree @check="onMenuTreeCheck" ref="menuTree"/>
+        <menu-tree @check="onMenuTreeCheck" ref="menuTree" checkable/>
       </div>
 
       <div class="drawer-bootom-button">
@@ -56,6 +51,7 @@ const formItemLayout = {
   wrapperCol: { span: 18 }
 }
 export default {
+  name: 'RolesEdit',
   components: {
     DeptInputTree,
     MenuTree
@@ -68,6 +64,7 @@ export default {
       validateStatus: '',
       editVisiable: true,
       menus: null,
+      mid: null,
     }
   },
   methods: {
@@ -77,17 +74,22 @@ export default {
     },
     setFormData(data){
       const role = data.role
-      this.menu = data.menus
+      this.mid = role.id
+      this.menus = data.menus.children
       let fields = ['name', 'code', 'remark']
-      Object.keys(dept).forEach((key) => {
+      Object.keys(role).forEach((key) => {
         if (fields.indexOf(key) !== -1) {
           this.form.getFieldDecorator(key)
           let obj = {}
-          obj[key] = dept[key]+''
+          obj[key] = role[key]+''
           this.form.setFieldsValue(obj)
         }
       })
-      const checkedKeys = this.menus.map(m => m.id)
+      const checkedKeys = this.menus.map(m =>this.getMenuIds(m)).reduce((a,b)=> a.concat(b))
+      console.log(checkedKeys)
+      this.$nextTick(()=>{
+        this.$refs.menuTree.setCheckedKeys(checkedKeys)
+      })
       
     },
     getMenuIds(item){
@@ -105,7 +107,7 @@ export default {
       this.form.validateFields((err, values) => {
         if(err)return
         this.loading = true
-        const params = {...values, parentId: this.dept_id, id: this.did }
+        const params = {...values, id: this.mid }
         api.updateModel('depts', this.did, params)
           .then(data => {
             if(data !== null){
