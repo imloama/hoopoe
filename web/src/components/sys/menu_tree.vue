@@ -12,6 +12,8 @@ import { mapActions } from 'vuex';
     :autoExpandParent="autoExpandParent"
     v-model="checkedKeys"
     @select="onSelect"
+    @check="onCheck"
+    defaultExpandAll
     :selectedKeys="selectedKeys"
     :treeData="treeData"
   />
@@ -26,6 +28,10 @@ export default {
     checkable:{
       type: Boolean,
       default: false
+    },
+    userMenuIds:{
+      type: Array,
+      default: []
     }
   },
   data(){
@@ -35,7 +41,8 @@ export default {
       expandedKeys: [],
       checkedKeys: [],
       selectedKeys: [],
-      treeData: []
+      treeData: [],
+      loading: false,
     }
   },
   computed: {
@@ -43,21 +50,28 @@ export default {
       menuTree: state => state.sys.menuTree,
     })
   },
+  watch: {
+  },
   created(){
+    this.loading = true
     this.getMenuTree().then(()=>{
       this.$nextTick(()=>{
         this.rebuildMenuTree()
       })
     }).catch(err=>{
+      this.loading = false
       console.error(err)
     })
   },
   methods: {
     ...mapActions(['getMenuTree']),
     rebuildMenuTree(){
+      this.loading = false
       let children = this.menuTree.children
       if(!children)return
       this.treeData = children.map(item => this.transform(item))
+      this.checkedKeys = this.userMenuIds
+      
     },
     transform(item){
       let titem = Object.assign({title: item.label}, item)
@@ -77,6 +91,7 @@ export default {
     onCheck (checkedKeys) {
       console.log('onCheck', checkedKeys)
       this.checkedKeys = checkedKeys
+      console.log('onCheck', checkedKeys)
       this.$emit('check', checkedKeys)
     },
     onSelect (selectedKeys, info) {
@@ -86,7 +101,17 @@ export default {
     },
     // 设置当前选中的内容
     setCheckedKeys(checkedKeys){
-      this.checkedKeys = checkedKeys;
+      if(this.loading){
+        let interval = setInterval(()=>{
+          if(!this.loading){
+            this.checkedKeys = checkedKeys;
+            clearInterval(interval)
+          }
+        },100)
+      }else{
+        this.checkedKeys = checkedKeys;
+      }
+      
     }
   }
 }

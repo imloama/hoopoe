@@ -28,7 +28,7 @@
         <a-input v-decorator="['remark']"/>
       </a-form-item>
       <div class="menu-tree-wrapper">
-        <menu-tree @check="onMenuTreeCheck" ref="menuTree" checkable/>
+        <menu-tree @check="onMenuTreeCheck" ref="menuTree" checkable :userMenuIds="userMenuIds"/>
       </div>
 
       <div class="drawer-bootom-button">
@@ -65,6 +65,7 @@ export default {
       editVisiable: true,
       menus: null,
       mid: null,
+      userMenuIds: [],
     }
   },
   methods: {
@@ -86,10 +87,7 @@ export default {
         }
       })
       const checkedKeys = this.menus.map(m =>this.getMenuIds(m)).reduce((a,b)=> a.concat(b))
-      console.log(checkedKeys)
-      this.$nextTick(()=>{
-        this.$refs.menuTree.setCheckedKeys(checkedKeys)
-      })
+      this.userMenuIds = checkedKeys
       
     },
     getMenuIds(item){

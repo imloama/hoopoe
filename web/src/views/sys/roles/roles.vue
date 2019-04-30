@@ -158,12 +158,12 @@ export default {
           this.$message.warning('请求服务器发生错误！'+ err.message)
         })
     },
-    view(){
+    view(record){
       api.http.get('/roles/'+record.id+'/info')
         .then(data => {
-          this.infoViewVisable = false
+          this.infoViewVisable = true
           this.$nextTick(()=>{
-            this.$refs.infoEdit.setData(data);
+            this.$refs.modelInfo.setData(data);
           })
         })
         .catch(err => {
