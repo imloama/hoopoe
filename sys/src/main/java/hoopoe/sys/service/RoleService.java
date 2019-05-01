@@ -2,6 +2,7 @@ package hoopoe.sys.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.imloama.mybatisplus.bootext.base.APIResult;
+import com.google.common.collect.Lists;
 import hoopoe.core.base.BaseServiceImpl;
 import hoopoe.sys.mapper.RoleMapper;
 import hoopoe.sys.model.Menu;
@@ -40,6 +41,7 @@ public class RoleService extends BaseServiceImpl<RoleMapper, Role> {
         origin.setRemark(role.getRemark());
         List<Long> hasInIds = this.roleMenuService.getMenuIdByRoleId(role.getId());
         List<Long> newIds = role.getMenuIds();
+        if(newIds == null)newIds = Lists.newArrayList();
         // ids中不存在，但，hasInIds存在的
         List<Long> willDel = hasInIds.stream().filter(i -> !newIds.contains(i)).collect(Collectors.toList());
         // hasInIds不存在，ids存在的

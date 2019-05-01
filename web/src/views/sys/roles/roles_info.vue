@@ -7,16 +7,16 @@
     :width="750"
     @ok="handleCancleClick"
     title="角色信息">
-    <a-layout class="role-info">
+    <a-layout class="role-info p-a-1">
       <a-layout-content class="role-content-one">
         <p>编码：{{role.code}}</p>
         <p>名称：{{role.name}}</p>
-        <p>备注：{{role.remart}}</p>
+        <p>备注：{{role.remark}}</p>
         
       </a-layout-content>
       <a-layout-content class="role-content-two">
         <div>权限：</div>
-        <div>
+        <div class="p-l-1">
           <menu-tree @check="onMenuTreeCheck" ref="menuTree" checkable :userMenuIds="userMenuIds"/>
         </div>
       </a-layout-content>

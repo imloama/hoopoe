@@ -27,9 +27,12 @@
                    :validateStatus="validateStatus">
         <a-input v-decorator="['remark']"/>
       </a-form-item>
-      <div class="menu-tree-wrapper">
-        <menu-tree @check="onMenuTreeCheck" ref="menuTree" checkable :userMenuIds="userMenuIds"/>
-      </div>
+      <a-row class="ant-form-item">
+        <a-col :span="3" class=" ant-form-item-label">权限：</a-col>
+        <a-col :span="18">
+          <menu-tree @check="onMenuTreeCheck" ref="menuTree" checkable :userMenuIds="userMenuIds"/>
+        </a-col>
+      </a-row>
 
       <div class="drawer-bootom-button">
         <a-popconfirm title="确定放弃编辑？" @confirm="onClose" okText="确定" cancelText="取消">
@@ -46,6 +49,7 @@
 import DeptInputTree from '@/components/sys/dept_input_tree'
 import MenuTree from '@/components/sys/menu_tree'
 import * as api from '@/api/base'
+import { colorList } from '@/components/tools/setting';
 const formItemLayout = {
   labelCol: { span: 3 },
   wrapperCol: { span: 18 }
@@ -66,6 +70,7 @@ export default {
       menus: null,
       mid: null,
       userMenuIds: [],
+      checkedMenusIds: []
     }
   },
   methods: {
@@ -88,6 +93,7 @@ export default {
       })
       const checkedKeys = this.menus.map(m =>this.getMenuIds(m)).reduce((a,b)=> a.concat(b))
       this.userMenuIds = checkedKeys
+      this.checkedMenusIds = checkedKeys
       
     },
     getMenuIds(item){
@@ -105,9 +111,12 @@ export default {
       this.form.validateFields((err, values) => {
         if(err)return
         this.loading = true
-        const params = {...values, id: this.mid }
-        api.updateModel('depts', this.did, params)
+        const menuIds = this.checkedMenusIds
+        const params = {...values, id: this.mid, menuIds }
+        console.log(params)
+        api.updateModel('roles', this.mid, params)
           .then(data => {
+            this.loading = false
             if(data !== null){
               this.reset()
               this.$emit('ok')
@@ -122,7 +131,7 @@ export default {
       this.dept_id = value || ''
     },
     onMenuTreeCheck(checkedKeys){
-
+      this.checkedMenusIds = checkedKeys
     }
 
   }

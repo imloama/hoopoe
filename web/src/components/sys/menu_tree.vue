@@ -5,7 +5,7 @@ import { mapActions } from 'vuex';
  */
 <template>
   <a-tree
-    showLine
+    :showLine="showLine"
     :checkable="checkable"
     @expand="onExpand"
     :expandedKeys="expandedKeys"
@@ -25,6 +25,10 @@ import { mapState, mapActions } from 'vuex'
 export default {
   name: 'MenuTree',
   props: {
+    showLine:{
+      type: Boolean,
+      default: true
+    },
     checkable:{
       type: Boolean,
       default: false
@@ -89,9 +93,7 @@ export default {
       this.autoExpandParent = false
     },
     onCheck (checkedKeys) {
-      console.log('onCheck', checkedKeys)
       this.checkedKeys = checkedKeys
-      console.log('onCheck', checkedKeys)
       this.$emit('check', checkedKeys)
     },
     onSelect (selectedKeys, info) {
@@ -113,6 +115,9 @@ export default {
       }
       
     }
+  },
+  getAllCheckedKeys(){
+    return this.checkedKeys
   }
 }
 </script>
