@@ -2,6 +2,7 @@ package hoopoe.sys.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.imloama.mybatisplus.bootext.base.APIResult;
+import com.github.imloama.mybatisplus.bootext.base.CustomException;
 import com.google.common.collect.Lists;
 import hoopoe.core.base.BaseServiceImpl;
 import hoopoe.sys.mapper.RoleMapper;
@@ -33,15 +34,36 @@ public class RoleService extends BaseServiceImpl<RoleMapper, Role> {
     }
 
     @Override
+    public boolean create(Role entity) throws Exception {
+        // 校验编码，不能重复
+        int count = this.baseMapper.countByCode(entity.getCode());
+        if(count > 0)throw new CustomException("编码["+entity.getCode()+"]不能重复！");
+        List<Long> menuIds = entity.getMenuIds();
+        entity.setCreateTime(new Date());
+        boolean result  =  super.create(entity);
+        if(!result)return result;
+        if(menuIds!=null && menuIds.size() > 0){
+            List<RoleMenu> menus = menuIds.stream().map( id -> {
+                RoleMenu rm = new RoleMenu();
+                rm.setRoleId(entity.getId());
+                rm.setMenuId(id);
+                return rm;
+            }).collect(Collectors.toList());
+            return this.roleMenuService.saveBatch(menus);
+        }
+        return result;
+    }
+
+    @Override
     public boolean update(Role role) throws Exception {
         Role origin = this.getById(role.getId());
-        origin.setCode(role.getCode());
+//        origin.setCode(role.getCode());//编码不能修改
         origin.setName(role.getName());
         origin.setModifyTime(new Date());
         origin.setRemark(role.getRemark());
         List<Long> hasInIds = this.roleMenuService.getMenuIdByRoleId(role.getId());
-        List<Long> newIds = role.getMenuIds();
-        if(newIds == null)newIds = Lists.newArrayList();
+        List<Long> menus = role.getMenuIds();
+        final List<Long> newIds = menus == null ?  Lists.newArrayList() : menus;
         // ids中不存在，但，hasInIds存在的
         List<Long> willDel = hasInIds.stream().filter(i -> !newIds.contains(i)).collect(Collectors.toList());
         // hasInIds不存在，ids存在的

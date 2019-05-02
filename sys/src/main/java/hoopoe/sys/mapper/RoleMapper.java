@@ -19,4 +19,6 @@ public interface RoleMapper extends BaseMapper<Role> {
     })
     List<Role> selectByUserId(@Param("userId") Long userId);
 
+    @Select("select count(*) from sys_role where code=#{code}")
+    int countByCode(@Param("code") String code);
 }

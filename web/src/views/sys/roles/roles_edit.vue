@@ -113,7 +113,6 @@ export default {
         this.loading = true
         const menuIds = this.checkedMenusIds
         const params = {...values, id: this.mid, menuIds }
-        console.log(params)
         api.updateModel('roles', this.mid, params)
           .then(data => {
             this.loading = false
@@ -126,9 +125,6 @@ export default {
             this.loading = false
           })
       });
-    },
-     handleDeptChange (value) {
-      this.dept_id = value || ''
     },
     onMenuTreeCheck(checkedKeys){
       this.checkedMenusIds = checkedKeys
