@@ -96,11 +96,11 @@ public class User extends BaseModel<User,Long> implements UserDetails {
     private String realName;//'真实姓名' ,
 
     @ZField(type = FieldType.DateTime, name = "createTime", label = "创建时间", edit = false, format = "yyyy-MM-dd HH:mm:ss")
-    @ExcelField(value = "创建时间", writeConverter = TimeConverter.class)
+    @ExcelField(value = "创建时间", dateFormat="yyyy-MM-dd HH:mm:ss")//, writeConverter = TimeConverter.class)
     private Date createTime;//'创建时间'
 
     @ZField(type = FieldType.DateTime, name = "modifyTime", label = "修改时间", edit = false, format = "yyyy-MM-dd HH:mm:ss")
-    @ExcelField(value = "修改时间", writeConverter = TimeConverter.class)
+    @ExcelField(value = "修改时间", dateFormat="yyyy-MM-dd HH:mm:ss")//, writeConverter = TimeConverter.class)
     private Date modifyTime;
 
     @ZField(type = FieldType.Select, name = "status", label = "状态", options = {

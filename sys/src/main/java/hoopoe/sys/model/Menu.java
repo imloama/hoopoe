@@ -75,10 +75,10 @@ public class Menu extends BaseModel<Menu,Long> implements ITree {
     @ZField(name = "orderBy", label = "排序")
     private Double orderBy;
 
-    @ExcelField(value = "创建时间", writeConverter = TimeConverter.class)
+    @ExcelField(value = "创建时间", dateFormat="yyyy-MM-dd HH:mm:ss")//, writeConverter = TimeConverter.class)
     private Date createTime;
 
-    @ExcelField(value = "修改时间", writeConverter = TimeConverter.class)
+    @ExcelField(value = "修改时间", dateFormat="yyyy-MM-dd HH:mm:ss")//, writeConverter = TimeConverter.class)
     private Date modifyTime;
 
 

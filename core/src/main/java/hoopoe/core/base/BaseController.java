@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Data
@@ -83,7 +84,7 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
 
     @GetMapping("/del/{id}")
     public APIResult delete(@PathVariable("id") Long id)throws Exception{
-        this.service.removeById(id);
+        this.service.delete(id);
         return APIResult.ok("success", true);
     }
 
@@ -92,10 +93,8 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
     public APIResult deleteAll(@RequestBody JSONObject params)throws Exception{
         JSONArray ids = params.getJSONArray("ids");
         if(ids == null || ids.isEmpty())return APIResult.fail("参数不正确！");
-        QueryWrapper<M> queryWrapper = new QueryWrapper<>();
-        M m = this.getModelClass().newInstance();
-        queryWrapper.in("id", ids);
-        this.service.remove(queryWrapper);
+        List<Long> list =  ids.stream().map(id -> Long.parseLong(id.toString())).collect(Collectors.toList());
+        this.service.deleteAll(list);
         return APIResult.ok("success", true);
     }
 
@@ -150,7 +149,7 @@ public abstract class BaseController<M extends BaseModel<M,Long>,S extends BaseS
      * @param pageRequest
      * @throws Exception
      */
-    @GetMapping("/excel")
+    @PostMapping("/excel")
     public void toExcel(@RequestBody PageRequest pageRequest)throws Exception{
         QueryWrapper<M> queryWrapper = queryWrapperFromRequest(pageRequest);
         List<M> list = this.service.list(queryWrapper);

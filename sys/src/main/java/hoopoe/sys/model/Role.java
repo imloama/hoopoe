@@ -50,10 +50,10 @@ public class Role extends BaseModel<Role,Long> {
     @ExcelField(value = "角色描述")
     private String remark;
 
-    @ExcelField(value = "创建时间", writeConverter = TimeConverter.class)
+    @ExcelField(value = "创建时间", dateFormat="yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
-    @ExcelField(value = "修改时间", writeConverter = TimeConverter.class)
+    @ExcelField(value = "修改时间", dateFormat="yyyy-MM-dd HH:mm:ss")//, writeConverter = TimeConverter.class)
     private Date modifyTime;
 
 

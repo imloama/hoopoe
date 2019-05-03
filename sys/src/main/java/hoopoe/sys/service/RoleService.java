@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -88,4 +89,27 @@ public class RoleService extends BaseServiceImpl<RoleMapper, Role> {
         result = this.updateById(origin);
         return result;
     }
+
+    @Override
+    public boolean delete(Serializable id) {
+        boolean result = super.delete(id);
+        if(!result)return result;
+        // 要支持删除role_menu表中的数据
+        result = this.rmRoleMenu(Lists.newArrayList(id));
+        return result;
+    }
+
+    private boolean rmRoleMenu(List<? extends Serializable> ids){
+        QueryWrapper<RoleMenu> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("role_id", ids);
+        return this.roleMenuService.deleteAll(ids);
+    }
+    @Override
+    public boolean deleteAll(List<? extends Serializable> ids) {
+        boolean result = super.deleteAll(ids);
+        if(!result)return result;
+        return this.rmRoleMenu(ids);
+    }
+
+
 }

@@ -207,4 +207,24 @@ public class UserService extends BaseServiceImpl<UserMapper, User> implements Us
         return this.remove(queryWrapper);
     }
 
+    @Override
+    public boolean delete(Serializable id) {
+        boolean result = super.delete(id);
+        if(!result)return result;
+        return this.rmUserRole(Lists.newArrayList(id));
+    }
+
+    @Override
+    public boolean deleteAll(List<? extends Serializable> ids) {
+        boolean result = super.deleteAll(ids);
+        if(!result)return result;
+        return this.rmUserRole(ids);
+    }
+
+    private boolean rmUserRole(List<? extends Serializable> ids){
+        QueryWrapper<UserRole> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("user_id", ids);
+        return this.userRoleService.remove(queryWrapper);
+    }
+
 }
