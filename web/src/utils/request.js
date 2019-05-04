@@ -38,15 +38,43 @@ service.interceptors.request.use(config => {
   if (token) {
     config.headers[ 'HTOKEN' ] = token // 让每个请求携带自定义 token 请根据实际情况自行修改
   }
-  config.headers['Accept'] = 'application/json'
+  if (config.url.endsWith('/excel')) {
+    // config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+    config.headers['Accept'] = 'application/json, text/plain, */*'
+  } else {
+    config.headers['Accept'] = 'application/json'
+  }
   return config
 }, err)
 
 // response interceptor
 service.interceptors.response.use((response) => {
+  const req = response.request
+  const url = req.responseURL
   const result = response.data
-  if (result.code !== 200) {
-    notification.error({ message: '错误', description: result.message })
+  if (response.status === 200) {
+    if (url.endsWith('/excel')) {
+      const blob = new Blob([result], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+      const fileName = `${new Date().getTime()}_导出结果.xlsx`
+      if ('download' in document.createElement('a')) {
+        const elink = document.createElement('a')
+        elink.download = fileName
+        elink.style.display = 'none'
+        elink.href = URL.createObjectURL(blob)
+        console.log(blob)
+        console.log(elink)
+        document.body.appendChild(elink)
+        elink.click()
+        URL.revokeObjectURL(elink.href)
+        document.body.removeChild(elink)
+      } else {
+        console.log('----------x save0000--------')
+        navigator.msSaveBlob(blob, fileName)
+      }
+      return response
+    } else if (result.code !== 200) {
+      notification.error({ message: '错误', description: result.message })
+    }
   }
   return result.data
 }, err)

@@ -83,7 +83,8 @@ export function downExcel (name, params) {
   return axios({
     url: `/${name}/excel`,
     method: 'post',
-    data: params
+    data: params,
+    responseType: 'blob'
   })
 }
 
