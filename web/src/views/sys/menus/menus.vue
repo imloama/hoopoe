@@ -1,12 +1,12 @@
 <template>
-  <a-card :bordered="false"  class="depts-wrapper">
+  <a-card :bordered="false"  class="menus-wrapper">
     <div class="m-b-1">
       <a-form layout="inline">
         <a-form-item>
-          <a-input v-model="queryParams.code" placeholder="请输入编码"/>
+          <a-input v-model="queryParams.name" placeholder="请输入名称"/>
         </a-form-item>
         <a-form-item>
-          <a-input v-model="queryParams.name" placeholder="请输入名称"/>
+          <a-input v-model="queryParams.path" placeholder="请输入地址"/>
         </a-form-item>
         <a-form-item>
           <a-button type="primary" @click="search" icon="search">搜索</a-button>
@@ -17,35 +17,32 @@
       </a-form>
     </div>
     <div>
-      <a-table rowKey="id" :columns="columns" size="middle" 
-        :pagination="pagination"
+      <a-table rowKey="key" :columns="columns" size="middle" 
         :dataSource="dataSource" :loading="loading" defaultExpandAllRows
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         >
+          <template slot="icon" slot-scope="text">
+            <a-icon :type="text" theme="twoTone" title="图标"></a-icon>
+          </template>
           <template slot="operation" slot-scope="text, record">
             <a-icon type="edit" theme="twoTone" @click="edit(record)" title="修改"></a-icon>
-             &nbsp;
-            <a-icon type="info-circle" theme="twoTone" @click="view(record)" title="查看"></a-icon>
           </template>
         </a-table>
     </div>
-    <roles-add v-if="addViewVisable" @close="onAddViewClose" @ok="onAddViewOK"/>
-    <roles-edit ref="modelEdit" v-if="editViewVisable" @close="onEditViewClose" @ok="onEditViewOK"/>
-    <roles-info v-if="infoViewVisable" ref="modelInfo" @close="onInfoViewClose"></roles-info>
+    <menus-add v-if="addViewVisable" @close="onAddViewClose" @ok="onAddViewOK"/>
+    <menus-edit ref="refEdit" v-if="editViewVisable" @close="onEditViewClose" @ok="onEditViewOK"/>
   </a-card>
 </template>
 <script>
 import { mapState, mapActions } from 'vuex'
 import * as sysapi from '@/api/sys'
 import * as api from '@/api/base'
-import RolesAdd from './roles_add'
-import RolesEdit from './roles_edit'
-import RolesInfo from './roles_info'
+import MenusAdd from './menus_add'
+import MenusEdit from './menus_edit'
 export default {
   components: {
-    RolesAdd,
-    RolesEdit,
-    RolesInfo,
+    MenusAdd,
+    MenusEdit,
   },
   data () {
     return {
@@ -59,8 +56,27 @@ export default {
           dataIndex: 'name',
         },
         {
-          title: '备注',
-          dataIndex: 'remark',
+          title: '地址',
+          dataIndex: 'path',
+        },
+        {
+          title: '图标',
+          dataIndex: 'icon',
+          scopedSlots: { customRender: 'icon' }
+        },
+         {
+          title: '类型',
+          dataIndex: 'type',
+          customRender: (text, row, index) => {
+            switch (text) {
+              case '0':
+                return '按钮'
+              case '1':
+                return '菜单'
+              default:
+                return text
+            }
+          }
         }, {
         title: '操作',
         dataIndex: 'operation',
@@ -73,60 +89,50 @@ export default {
       selectedRowKeys: [],
       addViewVisable: false,
       editViewVisable: false,
-      infoViewVisable: false,
-      // 分页数据
-      paginationInfo: null,
-       // 分页配置
-      pagination: {
-        pageSizeOptions: ['10', '20', '30', '50', '100'],
-        defaultCurrent: 1,
-        defaultPageSize: 50,
-        showQuickJumper: true,
-        showSizeChanger: true,
-        showTotal: (total, range) => `显示 ${range[0]} ~ ${range[1]} 条记录，共 ${total} 条记录`
-      }
     }
   },
   computed:{
     ...mapState({
-      // deptTree: state => state.sys.deptTree
-      rolePage: state => state.sys.rolePage,
+      menuTree: state => state.sys.menuTree
     }),
-    // dataSource(){
-    //   return this.deptTree.map(item => {
-    //     return this.rebuildDeptTree(item)
-    //   })
-    // }
   },
   created () {
     this.fetchData()
   },
   methods: {
-    ...mapActions(['getRolePage']),
+    ...mapActions(['getMenuTree']),
     fetchData(params = { query: [] }){
       this.loading = true
-      if (this.paginationInfo) {
-        // 如果分页信息不为空，则设置表格当前第几页，每页条数，并设置查询分页参数
-        params.pageSize = this.paginationInfo.size
-        params.pageNum = this.paginationInfo.current
-      } else {
-        // 如果分页信息为空，则设置为默认值
-        params.pageSize = this.pagination.defaultPageSize
-        params.pageNum = this.pagination.defaultCurrent
-      }
-      this.getRolePage(params).then(data=>{
+      this.getMenuTree(params).then(() => {
         this.$nextTick(()=>{
-          const pagination = { ...this.pagination }
-          const page = this.rolePage
-          pagination.total = page.total
-          this.dataSource = page.records
-          this.pagination = pagination
-        })        
-        this.loading = false
+          this.loading = false
+          if(this.menuTree && this.menuTree.children){
+            this.dataSource = this.menuTree.children.map(item => {
+              return this.rebuildTree(item)
+            })
+          }
+        })
       }).catch(err=>{
         console.log(err)
         this.loading = false
       })
+    },
+    rebuildTree(item){
+      let p = {
+          key: item.key,
+          label: item.label,
+          leaf: item.leaf,
+          parentKey: item.parentKey,
+          code: item.source.code,
+          path: item.source.path,
+          type: item.source.type,
+          icon: item.source.icon,
+          createTime: item.source.createTime,
+          name: item.source.name,
+          value: item.value,
+          children: item.children ? item.children.map(child => this.rebuildDeptTree(child)) : null
+        }
+      return p
     },
     getQueryItems(){
       const result = []
@@ -147,29 +153,16 @@ export default {
       this.addViewVisable = true
     },
     edit(record){
-      api.http.get('/roles/'+record.id+'/info')
-        .then(data => {
+      api.getModel('roles',record.key)
+        .then(dept => {
           this.editViewVisable = true
           this.$nextTick(()=>{
-            this.$refs.modelEdit.setFormData(data);
+            this.$refs.refEdit.setFormData(dept);
           })
         })
         .catch(err => {
           this.$message.warning('请求服务器发生错误！'+ err.message)
         })
-    },
-    view(record){
-      api.http.get('/roles/'+record.id+'/info')
-        .then(data => {
-          this.infoViewVisable = true
-          this.$nextTick(()=>{
-            this.$refs.modelInfo.setData(data);
-          })
-        })
-        .catch(err => {
-          this.$message.warning('请求服务器发生错误！'+ err.message)
-        })
-      
     },
     batchDelete(){
       if (!this.selectedRowKeys.length) {
@@ -197,11 +190,11 @@ export default {
         }
       })
     },
-    deleteAllById(ids){
-      return api.delAllModel('roles', ids)
+     deleteAllById(ids){
+      return api.delAllModel('menus', ids)
     },
     exportExcel(){
-      api.downExcel("roles", {
+      api.downExcel("menus", {
         query: this.getQueryItems()
       })
     },
@@ -221,9 +214,6 @@ export default {
     onEditViewOK(){
       this.editViewVisable = false
       this.search()
-    },
-    onInfoViewClose(){
-      this.infoViewVisable = false
     }
   },
   

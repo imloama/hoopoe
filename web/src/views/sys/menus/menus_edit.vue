@@ -1,12 +1,12 @@
 <template>
   <a-drawer
-    title="新增部门"
+    title="修改部门"
     :maskClosable="false"
     width=650
     placement="right"
     :closable="false"
     @close="onClose"
-    :visible="addVisiable"
+    :visible="editVisiable"
     style="height: calc(100% - 55px);overflow: auto;padding-bottom: 53px;">
     <a-form :form="form">
       <a-form-item label='编码'
@@ -59,13 +59,33 @@ export default {
       formItemLayout,
       validateStatus: '',
       dept_id: null,
-      addVisiable: true,
+      editVisiable: true,
+      did: null,
     }
   },
   methods: {
     onClose(){
       this.reset()
       this.$emit('close')
+    },
+    setFormData(dept){
+      this.did = dept.key
+      let fields = ['name', 'code', 'fullname']
+      Object.keys(dept).forEach((key) => {
+        if (fields.indexOf(key) !== -1) {
+          this.form.getFieldDecorator(key)
+          let obj = {}
+          obj[key] = dept[key]+''
+          this.form.setFieldsValue(obj)
+        }
+      })
+      this.dept_id = dept.parentId + ''
+      if(this.dept_id !=='0'){
+        this.$nextTick(()=>{
+          this.$refs.deptTree.reset(this.dept_id);
+        })
+      } 
+      
     },
     reset () {
       this.validateStatus = ''
@@ -76,11 +96,13 @@ export default {
       this.form.validateFields((err, values) => {
         if(err)return
         this.loading = true
-        const params = {...values, parentId: this.dept_id }
-        api.createModel('depts', params)
-          .then(res => {
-            this.reset()
-            this.$emit('ok')
+        const params = {...values, parentId: this.dept_id, id: this.did }
+        api.updateModel('depts', this.did, params)
+          .then(data => {
+            if(data !== null){
+              this.reset()
+              this.$emit('ok')
+            }
           }).catch(err =>{
             this.$message.warning(err.message)
             this.loading = false

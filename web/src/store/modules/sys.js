@@ -26,8 +26,8 @@ const actions = {
     const page = await sysapi.getRoles(params)
     commit(GET_ROLES_PAGE, page)
   },
-  async getMenuTree ({ commit, state }, params) {
-    const data = await sysapi.getMenuTree()
+  async getMenuTree ({ commit, state }, params = { query: [] }) {
+    const data = await sysapi.getMenuTree(params)
     commit(GET_MENU_TREE, data)
   }
 

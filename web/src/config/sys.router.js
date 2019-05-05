@@ -29,7 +29,7 @@ export default {
     {
       path: '/sys/menus',
       name: 'menus',
-      component: () => import('@/views/sys/menus'),
+      component: () => import('@/views/sys/menus/menus'),
       meta: { title: '菜单管理', keepAlive: true, permission: [ 'menus' ] }
     },
     {

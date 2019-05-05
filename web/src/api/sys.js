@@ -65,9 +65,10 @@ export function unLockUser (id) {
   })
 }
 
-export function getMenuTree () {
+export function getMenuTree (params) {
   return axios({
-    method: 'get',
-    url: `/menus/tree`
+    url: `/menus/tree`,
+    method: 'post',
+    data: params
   })
 }

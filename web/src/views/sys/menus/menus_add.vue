@@ -1,6 +1,6 @@
 <template>
   <a-drawer
-    title="新增部门"
+    title="新增菜单"
     :maskClosable="false"
     width=650
     placement="right"
@@ -19,15 +19,31 @@
                    :validateStatus="validateStatus">
         <a-input v-decorator="['name',{rules: [{ required: true, message: '名称不能为空'}]}]"/>
       </a-form-item>
-      <a-form-item label='全称'
+      <a-form-item label='路径'
                    v-bind="formItemLayout"
                    :validateStatus="validateStatus">
-        <a-input v-decorator="['fullname',{rules: [{ required: true, message: '全称不能为空'}]}]"/>
+        <a-input v-decorator="['path',{rules: [{ required: true, message: '用户名不能为空'}]}]"/>
       </a-form-item>
-      <a-form-item label='父部门'
+      <a-form-item label='类型'
                    v-bind="formItemLayout"
                    :validateStatus="validateStatus">
-        <dept-input-tree style="width:100%;" @change="handleDeptChange" ref="deptTree" />
+        <a-radio-group
+          v-decorator="['type',{rules: [{ required: true, message: '请选择状态'}]}]">
+          <a-radio value="0">按钮</a-radio>
+          <a-radio value="1">菜单</a-radio>
+        </a-radio-group>
+      </a-form-item>
+      <a-form-item label='图标'
+                   v-bind="formItemLayout"
+                   :validateStatus="validateStatus">
+        <a-input v-decorator="['icon',{rules: [{ required: true, message: '用户名不能为空'}]}]">
+          <a-icon slot="addonAfter" type="setting" @click="showIconSelector"/>
+        </a-input>
+      </a-form-item>
+      <a-form-item label='父菜单'
+                   v-bind="formItemLayout"
+                   :validateStatus="validateStatus">
+        <menu-input-tree style="width:100%;" @change="handleSelectChange" ref="refTree" />
       </a-form-item>
 
       <div class="drawer-bootom-button">
@@ -36,13 +52,17 @@
         </a-popconfirm>
         <a-button @click="handleSubmit" type="primary" :loading="loading">提交</a-button>
       </div>
-
+      <a-modal v-model="iconSelectorVisable">
+        <icon-selector @change="handleIconChange"/>
+      </a-modal>
+      
     </a-form>
    </a-drawer>
 </template>
 
 <script>
-import DeptInputTree from '@/components/sys/dept_input_tree'
+import MenuInputTree from '@/components/sys/menu_input_tree'
+import IconSelector from '@/components/IconSelector'
 import * as api from '@/api/base'
 const formItemLayout = {
   labelCol: { span: 3 },
@@ -50,7 +70,8 @@ const formItemLayout = {
 }
 export default {
   components: {
-    DeptInputTree
+    MenuInputTree,
+    IconSelector
   },
   data () {
     return {
@@ -58,8 +79,9 @@ export default {
       form: this.$form.createForm(this),
       formItemLayout,
       validateStatus: '',
-      dept_id: null,
+      selected_id: null,
       addVisiable: true,
+      iconSelectorVisable: false,
     }
   },
   methods: {
@@ -87,9 +109,16 @@ export default {
           })
       });
     },
-     handleDeptChange (value) {
-      this.dept_id = value || ''
+    handleSelectChange (value) {
+      this.selected_id = value || ''
     },
+    showIconSelector(){
+      this.iconSelectorVisable = true
+    },
+    handleIconChange(value){
+
+      this.iconSelectorVisable = false
+    }
 
   }
 }
