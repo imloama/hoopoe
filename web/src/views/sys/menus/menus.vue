@@ -69,9 +69,9 @@ export default {
           dataIndex: 'type',
           customRender: (text, row, index) => {
             switch (text) {
-              case '0':
-                return '按钮'
               case '1':
+                return '按钮'
+              case '0':
                 return '菜单'
               default:
                 return text
@@ -130,7 +130,7 @@ export default {
           createTime: item.source.createTime,
           name: item.source.name,
           value: item.value,
-          children: item.children ? item.children.map(child => this.rebuildDeptTree(child)) : null
+          children: item.children ? item.children.map(child => this.rebuildTree(child)) : null
         }
       return p
     },
@@ -153,7 +153,7 @@ export default {
       this.addViewVisable = true
     },
     edit(record){
-      api.getModel('roles',record.key)
+      api.getModel('menus',record.key)
         .then(dept => {
           this.editViewVisable = true
           this.$nextTick(()=>{

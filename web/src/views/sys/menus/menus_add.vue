@@ -29,14 +29,14 @@
                    :validateStatus="validateStatus">
         <a-radio-group
           v-decorator="['type',{rules: [{ required: true, message: '请选择状态'}]}]">
-          <a-radio value="0">按钮</a-radio>
-          <a-radio value="1">菜单</a-radio>
+          <a-radio value="0">菜单</a-radio>
+          <a-radio value="1">按钮</a-radio>
         </a-radio-group>
       </a-form-item>
       <a-form-item label='图标'
                    v-bind="formItemLayout"
                    :validateStatus="validateStatus">
-        <a-input v-decorator="['icon',{rules: [{ required: true, message: '用户名不能为空'}]}]">
+        <a-input v-model="selected_icon">
           <a-icon slot="addonAfter" type="setting" @click="showIconSelector"/>
         </a-input>
       </a-form-item>
@@ -80,6 +80,7 @@ export default {
       formItemLayout,
       validateStatus: '',
       selected_id: null,
+      selected_icon: null,
       addVisiable: true,
       iconSelectorVisable: false,
     }
@@ -98,8 +99,8 @@ export default {
       this.form.validateFields((err, values) => {
         if(err)return
         this.loading = true
-        const params = {...values, parentId: this.dept_id }
-        api.createModel('depts', params)
+        const params = {...values, parentId: this.selected_id, icon: this.selected_icon }
+        api.createModel('menus', params)
           .then(res => {
             this.reset()
             this.$emit('ok')
@@ -116,7 +117,7 @@ export default {
       this.iconSelectorVisable = true
     },
     handleIconChange(value){
-
+      this.selected_icon = value
       this.iconSelectorVisable = false
     }
 

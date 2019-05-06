@@ -1,6 +1,6 @@
 <template>
   <a-drawer
-    title="修改部门"
+    title="修改菜单"
     :maskClosable="false"
     width=650
     placement="right"
@@ -19,15 +19,31 @@
                    :validateStatus="validateStatus">
         <a-input v-decorator="['name',{rules: [{ required: true, message: '名称不能为空'}]}]"/>
       </a-form-item>
-      <a-form-item label='全称'
+      <a-form-item label='路径'
                    v-bind="formItemLayout"
                    :validateStatus="validateStatus">
-        <a-input v-decorator="['fullname',{rules: [{ required: true, message: '全称不能为空'}]}]"/>
+        <a-input v-decorator="['path',{rules: [{ required: true, message: '用户名不能为空'}]}]"/>
       </a-form-item>
-      <a-form-item label='父部门'
+      <a-form-item label='类型'
                    v-bind="formItemLayout"
                    :validateStatus="validateStatus">
-        <dept-input-tree style="width:100%;" @change="handleDeptChange" ref="deptTree" />
+        <a-radio-group
+          v-decorator="['type',{rules: [{ required: true, message: '请选择状态'}]}]">
+          <a-radio value="0">菜单</a-radio>
+          <a-radio value="1">按钮</a-radio>
+        </a-radio-group>
+      </a-form-item>
+      <a-form-item label='图标'
+                   v-bind="formItemLayout"
+                   :validateStatus="validateStatus">
+        <a-input v-model="selected_icon">
+          <a-icon slot="addonAfter" type="setting" @click="showIconSelector"/>
+        </a-input>
+      </a-form-item>
+      <a-form-item label='父菜单'
+                   v-bind="formItemLayout"
+                   :validateStatus="validateStatus">
+        <menu-input-tree style="width:100%;" @change="handleSelectChange" ref="refTree" />
       </a-form-item>
 
       <div class="drawer-bootom-button">
@@ -36,13 +52,17 @@
         </a-popconfirm>
         <a-button @click="handleSubmit" type="primary" :loading="loading">提交</a-button>
       </div>
-
+      <a-modal v-model="iconSelectorVisable">
+        <icon-selector @change="handleIconChange"/>
+      </a-modal>
+      
     </a-form>
    </a-drawer>
 </template>
 
 <script>
-import DeptInputTree from '@/components/sys/dept_input_tree'
+import MenuInputTree from '@/components/sys/menu_input_tree'
+import IconSelector from '@/components/IconSelector'
 import * as api from '@/api/base'
 const formItemLayout = {
   labelCol: { span: 3 },
@@ -50,7 +70,8 @@ const formItemLayout = {
 }
 export default {
   components: {
-    DeptInputTree
+    MenuInputTree,
+    IconSelector
   },
   data () {
     return {
@@ -58,9 +79,11 @@ export default {
       form: this.$form.createForm(this),
       formItemLayout,
       validateStatus: '',
-      dept_id: null,
       editVisiable: true,
-      did: null,
+      selected_pid: null,
+      selected_icon: null,
+      iconSelectorVisable: false,
+      mid: null,
     }
   },
   methods: {
@@ -68,21 +91,22 @@ export default {
       this.reset()
       this.$emit('close')
     },
-    setFormData(dept){
-      this.did = dept.key
-      let fields = ['name', 'code', 'fullname']
-      Object.keys(dept).forEach((key) => {
+    setFormData(data){
+      this.mid = data.key
+      let fields = ['name', 'code', 'path', 'type']
+      Object.keys(data).forEach((key) => {
         if (fields.indexOf(key) !== -1) {
           this.form.getFieldDecorator(key)
           let obj = {}
-          obj[key] = dept[key]+''
+          obj[key] = data[key]+''
           this.form.setFieldsValue(obj)
         }
       })
-      this.dept_id = dept.parentId + ''
-      if(this.dept_id !=='0'){
+      this.selected_pid = data.parentId + ''
+      this.selected_icon = data.icon
+      if(this.selected_pid !=='0'){
         this.$nextTick(()=>{
-          this.$refs.deptTree.reset(this.dept_id);
+          this.$refs.refTree.reset(this.selected_pid);
         })
       } 
       
@@ -96,8 +120,8 @@ export default {
       this.form.validateFields((err, values) => {
         if(err)return
         this.loading = true
-        const params = {...values, parentId: this.dept_id, id: this.did }
-        api.updateModel('depts', this.did, params)
+        const params = {...values, parentId: this.selected_id, icon: this.selected_icon }
+        api.updateModel('menus', this.mid, params)
           .then(data => {
             if(data !== null){
               this.reset()
@@ -109,9 +133,17 @@ export default {
           })
       });
     },
-     handleDeptChange (value) {
-      this.dept_id = value || ''
+     
+    handleSelectChange (value) {
+      this.selected_pid = value || ''
     },
+    showIconSelector(){
+      this.iconSelectorVisable = true
+    },
+    handleIconChange(value){
+      this.selected_icon = value
+      this.iconSelectorVisable = false
+    }
 
   }
 }
