@@ -35,7 +35,7 @@ export default {
     {
       path: '/sys/dicts',
       name: 'dicts',
-      component: () => import('@/views/sys/dicts'),
+      component: () => import('@/views/sys/dicts/dicts'),
       meta: { title: '字典管理', keepAlive: true, permission: [ 'dicts' ] }
     }
   ]

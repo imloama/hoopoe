@@ -16,7 +16,7 @@
       </a-form>
     </div>
     <div>
-      <a-table rowKey="key" :columns="columns" size="middle" 
+      <a-table rowKey="id" :columns="columns" size="middle" 
         :dataSource="dataSource" 
         :pagination="pagination"
         :loading="loading"
@@ -41,10 +41,12 @@ import * as sysapi from '@/api/sys'
 import * as api from '@/api/base'
 import ModelAdd from './dicts_add'
 import ModelEdit from './dicts_edit'
+import ModelInfo from './dicts_info'
 export default {
   components: {
     ModelAdd,
     ModelEdit,
+    ModelInfo
   },
   data () {
     return {
@@ -84,7 +86,9 @@ export default {
         showQuickJumper: true,
         showSizeChanger: true,
         showTotal: (total, range) => `显示 ${range[0]} ~ ${range[1]} 条记录，共 ${total} 条记录`
-      }
+      },
+      filteredInfo: null,
+      sortedInfo: null,
     }
   },
   computed:{
@@ -101,7 +105,6 @@ export default {
       this.paginationInfo = pagination
       this.filteredInfo = filters
       this.sortedInfo = sorter
-      this.userInfo.visiable = false
       this.fetchPage({
         orderby: sorter.field,
         asc: sorter.order === 'ascend',
@@ -111,12 +114,27 @@ export default {
     },
     fetchData(params = { query: [] }){
       this.loading = true
-      api.getModelPage(this.modelname, params).then(() => {
+      if (this.paginationInfo) {
+        // 如果分页信息不为空，则设置表格当前第几页，每页条数，并设置查询分页参数
+        // this.$refs.TableInfo.pagination.current = this.paginationInfo.current
+        // this.$refs.TableInfo.pagination.pageSize = this.paginationInfo.pageSize
+        params.pageSize = this.paginationInfo.size
+        params.pageNum = this.paginationInfo.current
+      } else {
+        // 如果分页信息为空，则设置为默认值
+        params.pageSize = this.pagination.defaultPageSize
+        params.pageNum = this.pagination.defaultCurrent
+      }
+      api.getModelPage(this.modelname, params).then(data => {
         this.loading = false
-        
+        const pagination = { ...this.pagination }
+        pagination.total = data.total
+        this.dataSource = data.records
+        this.pagination = pagination
       }).catch(err=>{
-        console.log(err)
+        console.error(err)
         this.loading = false
+        this.$message.error(err.message)
       })
     },
     getQueryItems(){
@@ -138,19 +156,16 @@ export default {
       this.addViewVisable = true
     },
     view(record){
-
+      this.infoViewVisable = true
+      this.$nextTick(()=>{
+        this.$refs.refInfo.setData(record);
+      })
     },
     edit(record){
-      api.getModel(this.modelname,record.key)
-        .then(dept => {
-          this.editViewVisable = true
-          this.$nextTick(()=>{
-            this.$refs.refEdit.setFormData(dept);
-          })
-        })
-        .catch(err => {
-          this.$message.warning('请求服务器发生错误！'+ err.message)
-        })
+      this.editViewVisable = true
+      this.$nextTick(()=>{
+        this.$refs.refEdit.setFormData(record);
+      })
     },
     batchDelete(){
       if (!this.selectedRowKeys.length) {
