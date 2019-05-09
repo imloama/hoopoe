@@ -7,43 +7,29 @@
           <a-form-item
             label="昵称"
           >
-            <a-input placeholder="给自己起个名字" />
+            <a-input v-model="nickname" placeholder="给自己起个名字" />
+          </a-form-item>
+         <a-form-item
+            label="真实姓名"
+          >
+            <a-input v-model="realName" placeholder="真实姓名" />
           </a-form-item>
           <a-form-item
-            label="Bio"
+            label="性别"
           >
-            <a-textarea rows="4" placeholder="You are not alone."/>
+            <a-radio-group v-model="sex">
+              <a-radio value="1">男</a-radio>
+              <a-radio value="0">女</a-radio>
+              <a-radio value="2">保密</a-radio>
+            </a-radio-group>
           </a-form-item>
 
           <a-form-item
             label="电子邮件"
             :required="false"
           >
-            <a-input placeholder="exp@admin.com"/>
+            <a-input v-model="email" placeholder="exp@admin.com"/>
           </a-form-item>
-          <a-form-item
-            label="加密方式"
-            :required="false"
-          >
-            <a-select defaultValue="aes-256-cfb">
-              <a-select-option value="aes-256-cfb">aes-256-cfb</a-select-option>
-              <a-select-option value="aes-128-cfb">aes-128-cfb</a-select-option>
-              <a-select-option value="chacha20">chacha20</a-select-option>
-            </a-select>
-          </a-form-item>
-          <a-form-item
-            label="连接密码"
-            :required="false"
-          >
-            <a-input placeholder="h3gSbecd"/>
-          </a-form-item>
-          <a-form-item
-            label="登陆密码"
-            :required="false"
-          >
-            <a-input placeholder="密码"/>
-          </a-form-item>
-
           <a-form-item>
             <a-button type="primary">提交</a-button>
             <a-button style="margin-left: 8px">保存</a-button>
@@ -51,15 +37,7 @@
         </a-form>
 
       </a-col>
-      <a-col :md="24" :lg="8" :style="{ minHeight: '180px' }">
-        <div class="ant-upload-preview" @click="$refs.modal.edit(1)" >
-          <a-icon type="cloud-upload-o" class="upload-icon"/>
-          <div class="mask">
-            <a-icon type="plus" />
-          </div>
-          <img :src="option.img"/>
-        </div>
-      </a-col>
+      
 
     </a-row>
 
@@ -71,6 +49,7 @@
 
 <script>
 import AvatarModal from './AvatarModal'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   components: {
@@ -78,6 +57,9 @@ export default {
   },
   data () {
     return {
+      nickname: null,
+      email: null,
+      sex: null,
       // cropper
       preview: {},
       option: {

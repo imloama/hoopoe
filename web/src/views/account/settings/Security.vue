@@ -1,34 +1,44 @@
 <template>
-  <a-list
-    itemLayout="horizontal"
-    :dataSource="data"
-  >
-    <a-list-item slot="renderItem" slot-scope="item, index" :key="index">
-      <a-list-item-meta>
-        <a slot="title">{{ item.title }}</a>
-        <span slot="description">
-          <span class="security-list-description">{{ item.description }}</span>
-          <span v-if="item.value"> : </span>
-          <span class="security-list-value">{{ item.value }}</span>
-        </span>
-      </a-list-item-meta>
-      <template v-if="item.actions">
-        <a slot="actions" @click="item.actions.callback">{{ item.actions.title }}</a>
-      </template>
+  <div class="account-security">
+    <a-row :gutter="16">
+      <a-col :md="24" :lg="16">
+        <a-form layout="vertical">
+          <a-form-item
+            label="原密码"
+          >
+            <a-input v-model="originpassword" type="password" placeholder="请输入原密码" />
+          </a-form-item>
+         <a-form-item
+            label="新密码"
+          >
+            <a-input v-model="newpassword" type="password" placeholder="请输入新密码" />
+          </a-form-item>
+           <a-form-item
+            label="再输一次新密码"
+          >
+            <a-input v-model="newpassword2" type="password" placeholder="请再输一次新密码" />
+          </a-form-item>
 
-    </a-list-item>
-  </a-list>
+          <a-form-item>
+            <a-button type="primary">提交</a-button>
+            <a-button style="margin-left: 8px">保存</a-button>
+          </a-form-item>
+        </a-form>
+
+      </a-col>
+      
+
+    </a-row>
+  </div>
 </template>
 
 <script>
 export default {
   data () {
     return {
-      data: [
-        { title: '账户密码', description: '当前密码强度', value: '强', actions: { title: '修改', callback: () => { this.$message.info('This is a normal message') } } },
-        { title: '密保问题', description: '未设置密保问题，密保问题可有效保护账户安全', value: '', actions: { title: '设置', callback: () => { this.$message.error('This is a message of error') } } },
-        { title: '邮箱', description: '已绑定邮箱', value: 'ant***sign.com', actions: { title: '修改', callback: () => { this.$message.warning('This is message of warning') } } }
-      ]
+      originpassword: null,
+      newpassword: null,
+      newpassword2: null,
     }
   }
 }
