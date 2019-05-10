@@ -188,6 +188,25 @@ public class UserController extends BaseController<User,UserService> {
     	return APIResult.ok("success", count > 0);
     }
 
+    @PostMapping("/updateinfo")
+    public APIResult updateInfo(@Token String token,@RequestBody User user){
+        if(StringUtils.isBlank(user.getNickname())
+            || StringUtils.isBlank(user.getEmail())
+                || StringUtils.isBlank(user.getMobile())
+            || user.getSex() == null){
+            return APIResult.fail("参数不正确！");
+        }
+        JWTToken jwtToken = JWTUtil.getFromToken(token);
+        User origin = this.service.getById(jwtToken.getId());
+        origin.setNickname(user.getNickname());
+        origin.setEmail(user.getEmail());
+        origin.setSex(user.getSex());
+        origin.setMobile(user.getMobile());
+        origin.setModifyTime(new Date());
+        this.service.updateById(origin);
+        return APIResult.ok("success", true);
+    }
+
     //TODO 上传头像
     @PostMapping("/avatar")
     public void updateAvatar(@Token String token,@RequestParam("avatar") MultipartFile avatar) throws Exception {

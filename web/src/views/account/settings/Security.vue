@@ -20,8 +20,7 @@
           </a-form-item>
 
           <a-form-item>
-            <a-button type="primary">提交</a-button>
-            <a-button style="margin-left: 8px">保存</a-button>
+            <a-button type="primary" :loading="loading" @click="sumbit">提交</a-button>
           </a-form-item>
         </a-form>
 
@@ -33,17 +32,42 @@
 </template>
 
 <script>
+import * as api from '@/api/base'
+
 export default {
   data () {
     return {
       originpassword: null,
       newpassword: null,
       newpassword2: null,
+      loading: false
+    }
+  },
+  created () {
+    this.originpassword = null
+    this.newpassword = null
+    this.newpassword2 = null
+  },
+  methods: {
+    submit(){
+      if(this.loading )return
+      if(this.originpassword === null || this.newpassword === null || this.newpassword2 === null || this.newpassword!==this.newpassword2){
+        this.$message.error('请填写完整参数！')
+        return
+      }
+      this.loading = true
+      api.post(`/users/resetpwd`, {password: this.originpassword, newpassword: this.newpassword, newpassword2: this.newpassword2}).then(data => {
+        if(data){
+          this.$message.success('密码更新成功！')
+        }else{
+          this.$message.error('密码更新失败！')
+        }
+        this.loading = false
+      }).catch(err => {
+        this.loading = false
+        this.$message.error('密码更新失败！')
+      })
     }
   }
 }
 </script>
-
-<style scoped>
-
-</style>

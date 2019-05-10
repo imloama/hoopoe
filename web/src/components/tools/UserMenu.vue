@@ -13,9 +13,15 @@
       </span>
       <a-menu slot="overlay" class="user-dropdown-menu-wrapper">
         <a-menu-item key="1">
-          <router-link :to="{ name: 'settings' }">
+          <router-link :to="{ name: 'BaseSettings' }">
             <a-icon type="setting"/>
             <span>个人设置</span>
+          </router-link>
+        </a-menu-item>
+        <a-menu-item key="2">
+          <router-link :to="{ name: 'SecuritySettings' }">
+            <a-icon type="lock"/>
+            <span>修改密码</span>
           </router-link>
         </a-menu-item>
         <a-menu-divider/>

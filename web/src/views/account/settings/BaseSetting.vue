@@ -15,6 +15,11 @@
             <a-input v-model="realName" placeholder="真实姓名" />
           </a-form-item>
           <a-form-item
+            label="手机号"
+          >
+            <a-input v-model="mobile" placeholder="手机号" />
+          </a-form-item>
+          <a-form-item
             label="性别"
           >
             <a-radio-group v-model="sex">
@@ -31,8 +36,7 @@
             <a-input v-model="email" placeholder="exp@admin.com"/>
           </a-form-item>
           <a-form-item>
-            <a-button type="primary">提交</a-button>
-            <a-button style="margin-left: 8px">保存</a-button>
+            <a-button type="primary" @click="submit" :loading="loading">提交</a-button>
           </a-form-item>
         </a-form>
 
@@ -50,6 +54,7 @@
 <script>
 import AvatarModal from './AvatarModal'
 import { mapState, mapActions } from 'vuex'
+import * as api from '@/api/base'
 
 export default {
   components: {
@@ -60,6 +65,8 @@ export default {
       nickname: null,
       email: null,
       sex: null,
+      mobile: null,
+      loading: false,
       // cropper
       preview: {},
       option: {
@@ -79,8 +86,36 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapState({
+      info: state => state.user.info
+    })
+  },
+  created(){
+    this.nickname = this.info.nickname
+    this.email = this.info.email
+    this.sex = this.info.sex
+    this.mobile = this.info.mobile
+    this.realName = this.info.realName
+  },
   methods: {
-
+    submit(){
+      if(this.loading)return;
+      if(this.nickname === null || this.email === null || this.sex === null || this.mobile === null){
+        this.$message.error('请填写参数！')
+        return
+      }
+      this.loading = true
+      api.http.post(`/users/updateinfo`, {nickname: this.nickname, email: this.email, sex: this.sex, mobile: this.mobile, realName: this.realName}).then(data => {
+        this.loading = false
+        if(data){
+          this.$message.success('更新成功！')
+        }
+      }).catch(err => {
+        this.loading = false
+        this.$message.error('更新失败：'+ err.message)
+      })
+    }
   }
 }
 </script>
