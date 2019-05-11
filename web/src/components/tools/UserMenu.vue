@@ -5,7 +5,8 @@
         <a-icon type="github"></a-icon>
       </span>
     </a>
-    <header-notice class="action"/>
+    <!--暂时取消顶部通知功能-->
+    <!-- <header-notice class="action"/> -->
     <a-dropdown>
       <span class="action ant-dropdown-link user-dropdown-menu">
         <a-avatar class="avatar" size="small" :src="avatar()"/>
