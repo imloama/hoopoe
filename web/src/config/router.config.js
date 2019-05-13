@@ -1,6 +1,7 @@
 // eslint-disable-next-line
 import { UserLayout, BasicLayout, RouteView, BlankLayout, PageView } from '@/components/layouts'
 import sys from './sys.router'
+import monitor from './monitor.router'
 
 export const asyncRouterMap = [
 
@@ -18,6 +19,7 @@ export const asyncRouterMap = [
         meta: { title: '工作台', keepAlive: true, icon: 'home', permission: [ 'workplace' ] }
       },
       sys,
+      monitor,
 
       // account
       {
