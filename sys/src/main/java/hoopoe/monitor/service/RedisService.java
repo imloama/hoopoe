@@ -24,7 +24,7 @@ public class RedisService {
     private LettuceConnectionFactory lettuceConnectionFactory;
 
 
-    public Properties info(){
+    public JSONObject info(){
         RedisConnection conn = this.lettuceConnectionFactory.getConnection();
         Properties info = conn.info();
         //String info = this.redisClient.connect().sync().info();
@@ -33,7 +33,7 @@ public class RedisService {
         JSONObject result = new JSONObject();
         result.putAll((Map)info);
         result.put("keys_size", keys);
-        return info;
+        return result;
     }
 
 

@@ -21,7 +21,7 @@ spring:
     username: root
     password: root
     db-name: hoopoe
-    filters: wall,mergeStat
+    #filters: wall,mergeStat
     jmx-enabled: false
     #driver-class-name: com.mysql.driver.JDBCDriver
     type: com.alibaba.druid.pool.DruidDataSource
