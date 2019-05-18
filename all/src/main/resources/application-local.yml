@@ -10,20 +10,29 @@ spring:
   # 是否开启 SQL日志输出，生产环境建议关闭，有性能损耗
  #p6spy: true
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/hoopoe?serverTimezone=GMT%2B8
-    username: root
-    password: root
-    db-name: hoopoe
     druid:
+      url: jdbc:mysql://127.0.0.1:3306/hoopoe?serverTimezone=GMT%2B8
+      username: root
+      password: root
+      db-name: hoopoe
       initial-size: 2
       max-active: 10
       min-idle: 2
       pool-prepared-statements: true
       validation-query: select 1
+      filters: stat, wall, config, slf4j
+      filter:
+        stat:
+          enabled: true
+        wall:
+          enabled: true
+        slf4j:
+          enabled: true
     #filters: wall,mergeStat
     jmx-enabled: false
     #driver-class-name: com.mysql.driver.JDBCDriver
-#    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  #    type: com.alibaba.druid.pool.DruidDataSource
 #    min-idle: 5
 #    max-active: 50
 #    max-wait: 6000
@@ -68,3 +77,7 @@ logging:
       hutool: debug
     hoopoe: debug
   path: ./logs
+management:
+  endpoints:
+    web:
+      base-path: /api/v1/actuator

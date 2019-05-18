@@ -27,6 +27,7 @@ public class DruidController {
             item.put("sqls",instance.getSqlStatDataList(id));
         }
 
+
         return APIResult.ok("success",list);
 
     }

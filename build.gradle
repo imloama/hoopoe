@@ -59,6 +59,7 @@ subprojects {
          implementation 'org.springframework.boot:spring-boot-starter-cache'
          implementation 'org.springframework.boot:spring-boot-starter-data-redis'
          implementation('org.springframework.boot:spring-boot-starter-thymeleaf')
+         implementation('org.springframework.boot:spring-boot-starter-actuator')
          compile group: 'org.apache.commons', name: 'commons-pool2', version: '2.6.0'
          compileOnly 'org.projectlombok:lombok'
          annotationProcessor 'org.projectlombok:lombok'

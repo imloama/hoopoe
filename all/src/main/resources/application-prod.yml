@@ -12,12 +12,21 @@ spring:
     username: root
     password: root
     db-name: hoopoe
+    driver-class-name: com.mysql.cj.jdbc.Driver
     druid:
       initial-size: 2
       max-active: 10
       min-idle: 2
       pool-prepared-statements: true
       validation-query: select 1
+      filters: stat, wall, config, slf4j
+      filter:
+        stat:
+          enabled: true
+        wall:
+          enabled: true
+        slf4j:
+          enabled: true
     #filters: wall,mergeStat
     jmx-enabled: false
     #driver-class-name: com.mysql.driver.JDBCDriver
@@ -61,3 +70,7 @@ logging:
       hutool: warn
     hoopoe: warn
   path: ./logs
+management:
+  endpoints:
+    web:
+      base-path: /api/v1/actuator
