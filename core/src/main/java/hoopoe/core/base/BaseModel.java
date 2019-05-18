@@ -10,7 +10,7 @@ import java.util.List;
  * @param <T>
  * @param <ID>
  */
-public abstract class BaseModel<T extends BaseModel, ID extends Serializable>
+public abstract class BaseModel<T extends BaseModel<T,ID>, ID extends Serializable>
         extends com.github.imloama.mybatisplus.bootext.base.BaseModel<T,ID> {
 
 
