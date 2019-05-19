@@ -77,6 +77,7 @@ export default {
          {
           title: 'SQL',
           dataIndex: 'SQL',
+          width: 200
         },
          {
           title: '读取行数',

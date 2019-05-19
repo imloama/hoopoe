@@ -51,6 +51,9 @@ service.interceptors.request.use(config => {
 service.interceptors.response.use((response) => {
   const req = response.request
   const url = req.responseURL
+  if (url.indexOf('/api/v1/actuator') >= 0) {
+    return response.data
+  }
   const result = response.data
   if (response.status === 200) {
     if (url.endsWith('/excel')) {
@@ -68,7 +71,6 @@ service.interceptors.response.use((response) => {
         URL.revokeObjectURL(elink.href)
         document.body.removeChild(elink)
       } else {
-        console.log('----------x save0000--------')
         navigator.msSaveBlob(blob, fileName)
       }
       return response
