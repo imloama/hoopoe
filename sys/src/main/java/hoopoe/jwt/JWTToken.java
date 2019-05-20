@@ -49,7 +49,7 @@ public class JWTToken implements Serializable {
     }
 
     public String toRedisKey(String token){
-        return HoopoeConsts.TOKEN_PREFIX+ getUsername()+"."+token.substring(0,8);
+        return HoopoeConsts.TOKEN_PREFIX+ getUsername();//+"."+token.substring(0,8);
     }
 
 

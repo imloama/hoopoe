@@ -55,11 +55,13 @@ spring:
         min-idle: 0
       #连接超时时间
       timeout: 10000
-
+    timeout: 3000
   cache:
     type: redis
     redis:
       time-to-live: 1
+  session:
+    store-type: redis
 
 
 hoopoe:
