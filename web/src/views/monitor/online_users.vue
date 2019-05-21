@@ -9,10 +9,13 @@
   
     <a-card title="在线用户">
       <a-skeleton active :loading="loading" :paragraph="{rows: 8}">
-        <a-table size="middle" rowKey="id" :columns="columns" :dataSource="loginusers">
+        <a-table size="middle" rowKey="id" :columns="columns" :dataSource="onlineusers">
           <template slot="operation" slot-scope="text, record, index">
-            <a-popconfirm title="是否要删除此行？" @confirm="remove(record.username)">
-              <a>删除</a>
+            <a-spin v-if="deling">
+              <a-icon slot="indicator" type="loading" style="font-size: 24px" spin />
+            </a-spin>
+            <a-popconfirm title="是否强制该用户退出？" @confirm="remove(record.username)" v-else>
+              <a>强制退出</a>
             </a-popconfirm>
           </template>
         </a-table>
@@ -26,18 +29,14 @@
 import * as api from '@/api/base'
 import moment from 'moment'
 moment.locale('zh-cn')
-import DetailList from '@/components/tools/DetailList'
-const DetailListItem = DetailList.Item
 export default {
   components: {
-    DetailList,
-    DetailListItem
   },
   data () {
     return {
-      time: '',
-      loading: true,
-      loginusers:[],
+      loading: false,
+      deling: false,
+      onlineusers:[],
       columns:[
          {
           title: '用户名',
@@ -46,7 +45,7 @@ export default {
          {
           title: '登陆时间',
           dataIndex: 'created',
-          customRender: (text) => new Date(text).toLocaleString()
+          customRender: (text) => moment(text).format('YYYY-MM-DD HH-mm-ss')
         },
         {
           title: '操作',
@@ -63,13 +62,30 @@ export default {
   methods: {
     reload(){
       this.loading = true
-     
+      api.htpp.get(`/system/onlineusers`).then(data => {
+        this.onlineusers = data
+      }).catch(err => {
+        console.error(err)
+        this.$message.error(`获取数据失败，${err.message}。`)
+      })
     },
-    convert (value) {
-      return Number(value * 100).toFixed(2)
-    },
-    bytesToMB(value){
-      return ((Number(value)/1024)/1024).toFixed(2)
+    remove(name){
+      if(name === null || typeof name === 'undefined'){
+        this.$message.
+        return
+      }
+      api.http.post(`/system/dropuser`, { usernames: [name]})
+        .then(data => {
+          if(data === null || typeof data === 'undefined'){
+            this.$message.error(`强制该用户退出失败`)
+          }else{
+            this.$message.success(`操作成功！`)
+            this.reload()
+          }
+        }).catch(err => {
+          console.error(err)
+          this.$message.error(`强制该用户退出失败，${err.message}`)
+        })
     }
   }
 }

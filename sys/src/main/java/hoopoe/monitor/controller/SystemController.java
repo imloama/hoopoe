@@ -31,7 +31,7 @@ public class SystemController {
      * 返回当前登陆用户
      * @return
      */
-    @GetMapping("/loginusers")
+    @GetMapping("/onlineusers")
     public APIResult loginusers(){
         Set<String> keys = this.redisTemplate.keys(HoopoeConsts.TOKEN_PREFIX+"*");
         List<String> list = this.redisTemplate.opsForValue().multiGet(keys);
