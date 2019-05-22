@@ -1,10 +1,6 @@
 /**
  * 在线用户
  */
-/**
- * 运行系统
- */
-
 <template>
   
     <a-card title="在线用户">
@@ -62,9 +58,11 @@ export default {
   methods: {
     reload(){
       this.loading = true
-      api.htpp.get(`/system/onlineusers`).then(data => {
+      api.http.get(`/system/onlineusers`).then(data => {
         this.onlineusers = data
+        this.loading = false
       }).catch(err => {
+        this.loading = false
         console.error(err)
         this.$message.error(`获取数据失败，${err.message}。`)
       })
@@ -74,8 +72,11 @@ export default {
         this.$message.
         return
       }
+      if(this.deling)return;
+      this.deling = true
       api.http.post(`/system/dropuser`, { usernames: [name]})
         .then(data => {
+          this.deling = false
           if(data === null || typeof data === 'undefined'){
             this.$message.error(`强制该用户退出失败`)
           }else{
@@ -83,6 +84,7 @@ export default {
             this.reload()
           }
         }).catch(err => {
+          this.deling = false
           console.error(err)
           this.$message.error(`强制该用户退出失败，${err.message}`)
         })

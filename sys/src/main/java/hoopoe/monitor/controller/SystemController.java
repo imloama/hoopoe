@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.imloama.mybatisplus.bootext.base.APIResult;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import hoopoe.core.HoopoeConsts;
 import hoopoe.jwt.JWTToken;
 import hoopoe.jwt.JWTUtil;
@@ -54,10 +55,13 @@ public class SystemController {
     public APIResult dropUser(@RequestBody JSONObject params)throws Exception{
         JSONArray usernames = params.getJSONArray("usernames");
         if(usernames == null || usernames.isEmpty())return APIResult.fail("参数不正确！");
-        Map<String,String> keys = usernames.stream().map(name -> HoopoeConsts.TOKEN_PREFIX + name)
-                .collect(Collectors.toMap(key -> key, key -> null));
+        Map<String,String> keys = Maps.newHashMap();
+        for(int i=0,n=usernames.size();i<n;i++){
+            String key = usernames.getString(i);
+            keys.put(HoopoeConsts.TOKEN_PREFIX + key, null);
+        }
         this.redisTemplate.opsForValue().multiSet(keys);
-        return APIResult.ok("success");
+        return APIResult.ok("success", true);
     }
 
 }

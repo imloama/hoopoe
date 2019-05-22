@@ -55,7 +55,8 @@ public class LoginController {
         //token保存到redis
         JWTToken jwtToken = JWTUtil.getFromToken(token);
         String key = jwtToken.toRedisKey(token);
-        this.redisTemplate.opsForValue().set(key, token,JWTUtil.generateExpirationDate().getTime(), TimeUnit.MILLISECONDS);
+        this.redisTemplate.opsForValue().set(key, token,
+                JWTUtil.generateExpirationDate().getTime(), TimeUnit.MILLISECONDS);
         return APIResult.ok("success",user);
     }
 
