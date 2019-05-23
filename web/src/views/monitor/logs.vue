@@ -6,6 +6,7 @@
 </template>
 
 <script>
+var Stomp = require('stompjs');
 export default {
 
 }
