@@ -6,6 +6,7 @@
     <div slot="extra">
       <a-button :loading="connecting" v-if="connected" @click="closeSocket">停止</a-button>
       <a-button :loading="connecting" v-else @click="openSocket">开启</a-button>
+      <a-button @click="clear">清除</a-button>
     </div>
     
     <div id="log-container" style="height: 450px; overflow-y: scroll; background: #333; color: #aaa; padding: 10px;">
@@ -60,6 +61,9 @@ export default {
         stompClient.disconnect();
         stompClient=null;
       }
+    },
+    clear(){
+      this.$refs.logcontent.innerHTML = ''
     }
   }
 }
