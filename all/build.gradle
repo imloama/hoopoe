@@ -14,9 +14,11 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'application'
 mainClassName = "hoopoe.AllApplication"
 
-//configurations {
+configurations {
 //	compile.exclude group:'org.springframework.boot',module:'spring-boot-starter-tomcat'
-//}
+    compile.exclude group:'commons-logging',module:'commons-logging'
+}
+
 
 dependencies {
    	implementation 'org.springframework.boot:spring-boot-starter-web'

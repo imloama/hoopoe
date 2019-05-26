@@ -58,18 +58,18 @@ spring:
       time-to-live: 1
 
 
-
-logging:
-  level:
-    root: warn
-    org:
-      spring: warn
-    com:
-      alibaba: warn
-    cn:
-      hutool: warn
-    hoopoe: warn
-  path: ./logs
+#
+#logging:
+#  level:
+#    root: warn
+#    org:
+#      spring: warn
+#    com:
+#      alibaba: warn
+#    cn:
+#      hutool: warn
+#    hoopoe: warn
+#  path: ./logs
 management:
   endpoints:
     web:

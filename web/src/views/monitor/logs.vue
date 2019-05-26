@@ -9,7 +9,7 @@
       <a-button @click="clear">清除</a-button>
     </div>
     
-    <div id="log-container" style="height: 450px; overflow-y: scroll; background: #333; color: #aaa; padding: 10px;">
+    <div id="log-container" class="logcontainer">
       <div ref="logcontent"></div>
   </div>
   </a-card>
@@ -17,8 +17,9 @@
 
 <script>
 import stomp from 'stompjs';
-import socket from 'sockjs-client';
-
+import SockJS from 'sockjs-client';
+import Vue from 'vue'
+import { ACCESS_TOKEN } from '@/store/mutation-types'
 
 let stompClient = null
 
@@ -30,7 +31,7 @@ export default {
 
     }
   },
-  created () {
+  mounted () {
     this.openSocket()
   },
   beforeDestroy () {
@@ -40,16 +41,19 @@ export default {
     openSocket(){
       if(this.connecting)return
       this.connecting = true
-      var socket = new SockJS('http://localhost:8080/api/v1/logs');
+      const token = Vue.ls.get(ACCESS_TOKEN)
+      var socket = new SockJS('/api/v1/logs?HTOKEN=' + token);
       stompClient = stomp.over(socket);
-      stompClient.connect({}, (frame) => {
+      let dom = this.$refs.logcontent
+      dom.innerHTML = "正在连接...<br/>",
+      stompClient.connect({HTOKEN: token}, (frame) => {
         this.connecting = true
+          dom.innerHTML = dom.innerHTML + "已经连接<br/>",
           stompClient.subscribe('/sys', (event) => {
               var content=JSON.parse(event.body);
               // $("#log-container div").append(content.timestamp +" "+ content.level+" --- ["+ content.threadName+"] "+ content.className+"   :"+content.body).append("<br/>");
               // $("#log-container").scrollTop($("#log-container div").height() - $("#log-container").height());
               let txt = content.timestamp +" "+ content.level+" --- ["+ content.threadName+"] "+ content.className+"   :" +content.body + "<br/>";
-              let dom = this.$refs.logcontent
               dom.innerHTML = dom.innerHTML + txt
 
           },{});
@@ -70,5 +74,11 @@ export default {
 </script>
 
 <style>
-
+.logcontainer{
+  height: calc(100vh - 250px); 
+  overflow-y: scroll; 
+  background: #333; 
+  color: #aaa; 
+  padding: 10px;
+}
 </style>

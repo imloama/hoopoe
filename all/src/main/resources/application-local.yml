@@ -67,18 +67,18 @@ spring:
 hoopoe:
   anon-url: /api/v1/login,/api/v1/logout
 
-
-logging:
-  level:
-    root: debug
-    org:
-      spring: debug
-    com:
-      alibaba: debug
-    cn:
-      hutool: debug
-    hoopoe: debug
-  path: ./logs
+#
+#logging:
+#  level:
+#    root: debug
+#    org:
+#      spring: debug
+#    com:
+#      alibaba: debug
+#    cn:
+#      hutool: debug
+#    hoopoe: debug
+#  path: ./logs
 
 management:
   endpoints:

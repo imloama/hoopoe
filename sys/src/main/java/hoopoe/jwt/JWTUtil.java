@@ -9,6 +9,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -129,7 +130,11 @@ public class JWTUtil {
     }
 
     public static String getToken(HttpServletRequest request){
-        return request.getHeader(HoopoeConsts.TOKEN_HEADER_KEY);
+        String token =  request.getHeader(HoopoeConsts.TOKEN_HEADER_KEY);
+        if(StringUtils.isBlank(token)){
+            return request.getParameter(HoopoeConsts.TOKEN_HEADER_KEY);
+        }
+        return token;
     }
 
 //
