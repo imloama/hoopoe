@@ -46,8 +46,9 @@ export default {
       stompClient = stomp.over(socket);
       let dom = this.$refs.logcontent
       dom.innerHTML = "正在连接...<br/>",
-      stompClient.connect({HTOKEN: token}, (frame) => {
-        this.connecting = true
+      stompClient.connect({}, (frame) => {
+        console.log(`-------connected----------`)
+        this.connecting = false
           dom.innerHTML = dom.innerHTML + "已经连接<br/>",
           stompClient.subscribe('/sys', (event) => {
               var content=JSON.parse(event.body);
