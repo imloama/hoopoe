@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.websocket.*;
@@ -21,7 +22,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
-@ServerEndpoint("/api/v1/logs/sys")
+@ServerEndpoint("/api/v1/logs/sys/{username}")
 @Component
 public class LogWebSocketServer{
 
@@ -37,11 +38,12 @@ public class LogWebSocketServer{
      * @param session
      */
     @OnOpen
-    public void onOpen(Session session, @RequestParam(HoopoeConsts.TOKEN_HEADER_KEY) String token) throws Exception{
-        if(StringUtils.isBlank(token))throw new Exception("参数不正确");
-        JWTToken jwtToken = JWTUtil.getFromToken(token);
-        String redisToken = redisTemplate.opsForValue().get(jwtToken.toRedisKey(token));
-        if(StringUtils.isBlank(redisToken) || !redisToken.equals(token))throw new Exception("参数不正确");
+    public void onOpen(Session session, @PathParam("username") String username) throws Exception{
+        log.debug("用户[" + username +"]连接websocket");
+//        if(StringUtils.isBlank(token))throw new Exception("参数不正确");
+//        JWTToken jwtToken = JWTUtil.getFromToken(token);
+//        String redisToken = redisTemplate.opsForValue().get(jwtToken.toRedisKey(token));
+//        if(StringUtils.isBlank(redisToken) || !redisToken.equals(token))throw new Exception("参数不正确");
         //加入set中
         webSocketSet.add(session);
         //添加在线人数

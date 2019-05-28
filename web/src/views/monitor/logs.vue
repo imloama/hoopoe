@@ -19,6 +19,7 @@
 // import stomp from 'stompjs';
 // import SockJS from 'sockjs-client';
 import Vue from 'vue'
+import { mapState } from 'vuex'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 
 let stompClient = null
@@ -31,6 +32,11 @@ export default {
       connecting: false,
 
     }
+  },
+  computed: {
+    ...mapState({
+      info: state => state.user.info
+    })
   },
   mounted () {
     this.openSocket()
@@ -45,7 +51,7 @@ export default {
       let dom = this.$refs.logcontent
       dom.innerHTML = "正在连接...<br/>"
       const token = Vue.ls.get(ACCESS_TOKEN)
-      const url = `ws://127.0.0.1:8090/api/v1/logs/sys?HTOKEN=${token}`
+      const url = `ws://127.0.0.1:8090/api/v1/logs/sys/${this.info.name}?HTOKEN=${token}`
       ws = new WebSocket(url)
       ws.onopen = (event) => {
           this.connecting = false
