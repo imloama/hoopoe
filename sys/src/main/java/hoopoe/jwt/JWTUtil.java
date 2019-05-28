@@ -1,6 +1,7 @@
 package hoopoe.jwt;
 
 
+import cn.hutool.core.date.DateUtil;
 import hoopoe.core.HoopoeConsts;
 import hoopoe.core.configuration.HoopoeConfig;
 import hoopoe.sys.model.User;
@@ -10,13 +11,10 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 public class JWTUtil {
@@ -60,6 +58,10 @@ public class JWTUtil {
                     .setSigningKey( HoopoeConsts.SECRET )
                     .parseClaimsJws(token)
                     .getBody();
+            if(claims.getExpiration().before(new Date())){
+                return claims;
+            }
+            return null;
         } catch (Exception e) {
             claims = null;
         }
@@ -128,6 +130,7 @@ public class JWTUtil {
                         && !isTokenExpired(token)
         );
     }
+
 
     public static String getToken(HttpServletRequest request){
         String token =  request.getHeader(HoopoeConsts.TOKEN_HEADER_KEY);

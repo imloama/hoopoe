@@ -22,10 +22,10 @@ import java.util.concurrent.Executors;
 public class SysWebSocketConfiguration implements /*WebSocketConfigurer,*/ WebSocketMessageBrokerConfigurer {
 
     //使用boot内置tomcat时需要注入此bean
-//    @Bean
-//    public ServerEndpointExporter serverEndpointExporter() {
-//        return new ServerEndpointExporter();
-//    }
+    @Bean
+    public ServerEndpointExporter serverEndpointExporter() {
+        return new ServerEndpointExporter();
+    }
 
 
 //    @Override
@@ -42,15 +42,14 @@ public class SysWebSocketConfiguration implements /*WebSocketConfigurer,*/ WebSo
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/api/v1/logs")
-                .setAllowedOrigins("*")
-                .withSockJS();
+//        registry.addEndpoint("/api/v1/logs")
+//                .setAllowedOrigins("*")
+//                .withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-//        registry.setApplicationDestinationPrefixes("/api/v1/logs");
-        registry.enableSimpleBroker("/sys");
+//        registry.enableSimpleBroker("/sys");
     }
 
 //
