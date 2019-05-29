@@ -58,7 +58,7 @@ public class JWTUtil {
                     .setSigningKey( HoopoeConsts.SECRET )
                     .parseClaimsJws(token)
                     .getBody();
-            if(claims.getExpiration().before(new Date())){
+            if(claims.getExpiration().after(new Date())){
                 return claims;
             }
             return null;

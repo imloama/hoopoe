@@ -1,7 +1,7 @@
 package hoopoe.monitor.controller;
 
 import com.alibaba.fastjson.JSON;
-import hoopoe.monitor.logfilter.LogWebSocketServer;
+//import hoopoe.monitor.logfilter.LogWebSocketServer;
 import hoopoe.monitor.logfilter.LoggerMessage;
 import hoopoe.monitor.logfilter.LoggerQueue;
 import lombok.extern.slf4j.Slf4j;
@@ -15,25 +15,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LogController {
 
-//    @Autowired
-//    private SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
-//    @MessageMapping("/api/v1/logs")
-//    public void log(String msg){
-//        messagingTemplate.convertAndSend("got message:" + msg);
-//    }
-
-    @Scheduled(fixedDelay = 100)
-    public void showLogs() {
-        try {
-            LoggerMessage log = LoggerQueue.getInstance().poll();
-            if(log!=null){
-//                if(messagingTemplate!=null)
-//                    messagingTemplate.convertAndSend("/sys",log);
-                LogWebSocketServer.sendToAll(JSON.toJSONString(log));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    @MessageMapping("/log")
+    public void log(String msg){
+        //messagingTemplate.convertAndSend("got message:" + msg);
+        messagingTemplate.convertAndSend("/sys", msg);
     }
+
+
+//    @Scheduled(fixedDelay = 100)
+//    public void showLogs() {
+//        try {
+//            LoggerMessage log = LoggerQueue.getInstance().poll();
+//            if(log!=null){
+//                if(messagingTemplate!=null)
+//                    messagingTemplate.convertAndSend("/sys/logs",log);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 }

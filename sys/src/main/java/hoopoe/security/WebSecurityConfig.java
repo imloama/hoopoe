@@ -72,25 +72,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/swagger-resources/configuration/security",
                 "/swagger-ui.html"
         );
+        web.ignoring().antMatchers("/api/v1/logs/**");
     }
 
     @Override
     protected void configure( HttpSecurity httpSecurity ) throws Exception {
-        /*
-        httpSecurity.csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/v1/login").permitAll()
-                .antMatchers(HttpMethod.POST,"/api/v1/**").authenticated()
-                .antMatchers(HttpMethod.PUT,"/api/v1/**").authenticated()
-                .antMatchers(HttpMethod.DELETE,"/api/v1/**").authenticated()
-                .antMatchers(HttpMethod.GET,"/api/v1/**").authenticated();
 
-        httpSecurity
-                .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
-        httpSecurity.headers().cacheControl();
-        */
         httpSecurity
                 //.exceptionHandling().accessDeniedHandler(accessDeniedHandler).and()
                 //.exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
