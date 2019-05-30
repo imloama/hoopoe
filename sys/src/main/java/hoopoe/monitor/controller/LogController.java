@@ -1,15 +1,11 @@
 package hoopoe.monitor.controller;
 
-import com.alibaba.fastjson.JSON;
 //import hoopoe.monitor.logfilter.LogWebSocketServer;
-import hoopoe.monitor.logfilter.LoggerMessage;
-import hoopoe.monitor.logfilter.LoggerQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.bind.annotation.RestController;
+        import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
