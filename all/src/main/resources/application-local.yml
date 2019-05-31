@@ -63,6 +63,9 @@ spring:
   session:
     store-type: redis
 
+flowable:
+  #关闭定时任务JOB
+  async-executor-activate: false
 
 hoopoe:
   anon-url: /api/v1/login,/api/v1/logout
