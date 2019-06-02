@@ -2,10 +2,16 @@
 apply plugin: 'io.spring.dependency-management'
 
 
+configurations {
+	compile.exclude group:'org.slf4j',module:'log4j-over-slf4j'
+}
+
+
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter')
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compile group: 'org.flowable', name: 'flowable-spring-boot-starter', version: '6.4.1'
+	compile 'org.flowable:flowable-spring-boot-starter-rest:6.4.1'
 
 
 //        implementation 'org.springframework.boot:spring-boot-starter-undertow'
