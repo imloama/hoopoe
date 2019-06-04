@@ -10,8 +10,14 @@ configurations {
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter')
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// flowable
 	compile group: 'org.flowable', name: 'flowable-spring-boot-starter', version: '6.4.1'
-	compile 'org.flowable:flowable-spring-boot-starter-rest:6.4.1'
+	implementation 'org.flowable:flowable-spring-boot-starter-rest:6.4.1'
+	implementation 'org.flowable:flowable-ui-modeler-rest:6.4.1'
+	implementation 'org.flowable:flowable-ui-modeler-conf:6.4.1'
+	implementation 'org.flowable:flowable-ui-modeler-logic:6.4.1'
+
 
 
 //        implementation 'org.springframework.boot:spring-boot-starter-undertow'
