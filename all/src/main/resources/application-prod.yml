@@ -56,7 +56,15 @@ spring:
     type: redis
     redis:
       time-to-live: 1
-
+#flowable:
+#  database-schema-update: true
+#  process:
+#    definition-cache-limit: 1
+##  activityFontName: \u5B8B\u4F53
+##  labelFontName: \u5B8B\u4F53
+##  annotationFontName: \u5B8B\u4F53
+#  xml:
+#    encoding: UTF-8
 
 #
 #logging:
