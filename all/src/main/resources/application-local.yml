@@ -11,7 +11,7 @@ spring:
  #p6spy: true
   datasource:
     druid:
-      url: jdbc:mysql://127.0.0.1:3306/hoopoe?serverTimezone=GMT%2B8
+      url: jdbc:mysql://127.0.0.1:3306/hoopoe?serverTimezone=GMT%2B8&characterEncoding=UTF-8&useSSL=false&nullCatalogMeansCurrent=true
       username: root
       password: root
       db-name: hoopoe
@@ -30,7 +30,7 @@ spring:
           enabled: true
     #filters: wall,mergeStat
     jmx-enabled: false
-    #driver-class-name: com.mysql.driver.JDBCDriver
+#    driver-class-name: com.mysql.driver.JDBCDriver
     driver-class-name: com.mysql.cj.jdbc.Driver
   #    type: com.alibaba.druid.pool.DruidDataSource
 #    min-idle: 5
@@ -67,17 +67,17 @@ flowable:
 #  #关闭定时任务JOB
 ##  async-executor-activate: false
 ## flowable config #
-  database-schema-update: create-drop
+  database-schema-update: true
 #  #flowable.async-executor-activate=false
 #  #flowable.async-history-executor-activate=false
 #  process:
 #    definition-cache-limit: 1
 #  #宋体
-#  activityFontName: \u5B8B\u4F53
-#  labelFontName: \u5B8B\u4F53
-#  annotationFontName: \u5B8B\u4F53
-#  xml:
-#    encoding: UTF-8
+  activityFontName: \u5B8B\u4F53
+  labelFontName: \u5B8B\u4F53
+  annotationFontName: \u5B8B\u4F53
+  xml:
+    encoding: UTF-8
 
 hoopoe:
   anon-url: /api/v1/login,/api/v1/logout
@@ -86,14 +86,15 @@ hoopoe:
 logging:
 #  config: classpath:logback.xml
   level:
-    root: debug
+    root: warn
     org:
-      spring: debug
+      spring: warn
+      flowable: debug
     com:
-      alibaba: debug
+      alibaba: warn
     cn:
-      hutool: debug
-    hoopoe: debug
+      hutool: warn
+    hoopoe: warn
   path: ./logs
 
 management:

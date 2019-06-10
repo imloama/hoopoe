@@ -56,8 +56,8 @@ spring:
     type: redis
     redis:
       time-to-live: 1
-#flowable:
-#  database-schema-update: true
+flowable:
+  database-schema-update: true
 #  process:
 #    definition-cache-limit: 1
 ##  activityFontName: \u5B8B\u4F53
@@ -67,17 +67,17 @@ spring:
 #    encoding: UTF-8
 
 #
-#logging:
-#  level:
-#    root: warn
-#    org:
-#      spring: warn
-#    com:
-#      alibaba: warn
-#    cn:
-#      hutool: warn
-#    hoopoe: warn
-#  path: ./logs
+logging:
+  level:
+    root: warn
+    org:
+      spring: warn
+    com:
+      alibaba: warn
+    cn:
+      hutool: warn
+    hoopoe: warn
+  path: ./logs
 management:
   endpoints:
     web:
